@@ -1,0 +1,47 @@
+<odoo>
+    <record id="view_rui_ro_form" model="ir.ui.view">
+        <field name="name">rui.ro.form</field>
+        <field name="model">rui_ro</field>
+        <field name="arch" type="xml">
+            <form string="Quản Lý Rủi Ro">
+                <sheet>
+                    <group>
+                        <field name="ten_rui_ro"/>
+                        <field name="mo_ta"/>
+                        <field name="du_an_id" required="1"/>
+                        <field name="muc_do_anh_huong"/>
+                        <field name="trang_thai"/>
+                        <field name="khac_phuc"/>
+                    </group>
+                    <group>
+                        <field name="nguoi_chiu_trach_nhiem_ids" widget="many2many_tags"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+   <record id="view_rui_ro_tree" model="ir.ui.view">
+        <field name="name">rui.ro.tree</field>
+        <field name="model">rui_ro</field>
+        <field name="arch" type="xml">
+            <tree string="Danh Sách Rủi Ro">
+                <field name="ten_rui_ro"/>
+                <field name="du_an_id"/>
+                <field name="muc_do_anh_huong"/>
+                <field name="trang_thai"/>
+                <field name="khac_phuc"/>
+                <field name="so_luong_nguoi_chiu_trach_nhiem" string="Số Người Chịu Trách Nhiệm"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_rui_ro" model="ir.actions.act_window">
+        <field name="name">Rủi Ro Dự Án</field>
+        <field name="res_model">rui_ro</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_rui_ro" name="Rủi Ro Dự Án" parent="menu_du_an" action="action_rui_ro"/>
+</odoo>

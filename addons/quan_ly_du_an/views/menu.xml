@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem
+            id="menu_root"
+            name="Quản lý dự án"
+            sequence="0"/>
+          
+        <menuitem name="Quản lý dự án" 
+            id="menu_du_an" 
+            parent="menu_root" 
+            sequence="1"
+            action="action_du_an" />
+            
+        <menuitem name="Quản lý nhiệm vụ" 
+            id="menu_nhiem_vu" 
+            parent="menu_root" 
+            sequence="2"
+            action="action_nhiem_vu" /> 
+
+        <menuitem name="Thời gian làm việc" 
+            id="menu_thoi_gian_lam_viec" 
+            parent="menu_root" 
+            sequence="3"
+            action="action_thoi_gian_lam_viec" />      
+
+        <menuitem name="Quản lý tiến độ" 
+            id="menu_tien_do" 
+            parent="menu_root" 
+            sequence="4"
+            action="action_tien_do" />    
+
+        
+       
+       <menuitem id="menu_dashboard" name="Dashboard" parent="menu_root"/>
+        <menuitem id="menu_dashboard_trang_thai" name="Thống kê Trạng Thái" action="action_dashboard_trang_thai" parent="menu_dashboard"/>
+        <menuitem id="menu_dashboard_uu_tien" name="Thống kê Mức Độ Ưu Tiên" action="action_dashboard_uu_tien" parent="menu_dashboard"/>
+    </data>
+</odoo>

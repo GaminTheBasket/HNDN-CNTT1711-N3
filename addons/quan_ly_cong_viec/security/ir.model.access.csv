@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_cong_viec,cong_viec.cong_viec,model_cong_viec,base.group_user,1,1,1,1
+access_cong_viec_con,cong_viec_con.cong_viec_con,model_cong_viec_con,base.group_user,1,1,1,1
+access_ghi_nhan_thoi_gian,ghi_nhan_thoi_gian.ghi_nhan_thoi_gian,model_ghi_nhan_thoi_gian,base.group_user,1,1,1,1
+access_danh_gia_cong_viec,danh_gia_cong_viec.danh_gia_cong_viec,model_danh_gia_cong_viec,base.group_user,1,1,1,1

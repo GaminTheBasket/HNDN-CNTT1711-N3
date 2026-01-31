@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_cong_viec_con_form" model="ir.ui.view">
+            <field name="name">cong_viec_con</field>
+            <field name="model">cong_viec_con</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_read_only" style="font-size:25px">Công việc con</div>
+                        <group col="4" string="Thông tin chung">
+                            <field name="cong_viec_id"/>
+                            <field name="nhan_vien_id"/>
+                            <field name="ten_cong_viec_con"/>
+                            <field name="trang_thai"/>
+                            <field name="han_hoan_thanh"/>
+                            <field name="tien_do"/>
+                            <field name="mo_ta"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_cong_viec_con_tree" model="ir.ui.view">
+            <field name="name">cong_viec_con</field>
+            <field name="model">cong_viec_con</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="cong_viec_id"/>
+                    <field name="nhan_vien_id"/>
+                    <field name="ten_cong_viec_con"/>
+                    <field name="trang_thai"/>
+                    <field name="han_hoan_thanh"/>
+                    <field name="tien_do"/>
+                    <field name="mo_ta"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="cong_viec_con_search">
+            <field name="model">cong_viec_con</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="cong_viec_id"/>
+                    <field name="nhan_vien_id"/>
+                    <field name="ten_cong_viec_con"/>
+                    <field name="trang_thai"/>
+                    <field name="han_hoan_thanh"/>
+                    <field name="tien_do"/>
+                    <field name="mo_ta"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_cong_viec_con" model="ir.actions.act_window">
+            <field name="name">công việc con</field>
+            <field name="res_model">cong_viec_con</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref = "cong_viec_con_search"/>
+        </record>
+    </data>
+</odoo>
+        
+    

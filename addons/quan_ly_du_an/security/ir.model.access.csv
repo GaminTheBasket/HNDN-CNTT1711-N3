@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_du_an,du_an.du_an,model_du_an,base.group_user,1,1,1,1
+access_nhiem_vu,nhiem_vu.nhiem_vu,model_nhiem_vu,base.group_user,1,1,1,1
+access_thoi_gian_lam_viec,thoi_gian_lam_viec.thoi_gian_lam_viec,model_thoi_gian_lam_viec,base.group_user,1,1,1,1
+access_tien_do,tien_do,model_tien_do,base.group_user,1,1,1,1
+access_rui_ro,rui_ro,model_rui_ro,base.group_user,1,1,1,1
+access_tre_han,tre_han,model_tre_han,base.group_user,1,1,1,1
+

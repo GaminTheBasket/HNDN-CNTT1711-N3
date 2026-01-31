@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_nhiem_vu_form" model="ir.ui.view">
+            <field name="name">nhiem_vu_form</field>
+            <field name="model">nhiem_vu</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <group string="Thông tin nhiệm vụ">
+                            <field name="ten_nhiem_vu"/>
+                            <field name="mo_ta"/>
+                            <field name="du_an_id"/>
+                        </group>
+
+                        <group string="Phân công">
+                            <field name="so_luong_nguoi_phu_trach" readonly="1"/>
+                            <field name="nguoi_phu_trach_id" widget="many2many_tags" readonly="1"/>
+                            
+                            <field name="so_luong_nguoi_thuc_hien" readonly="1"/>
+                            <field name="nguoi_thuc_hien_id" widget="many2many_tags"/>
+                        </group>
+                        
+                        <group string="Thời gian">
+                            <field name="ngay_bat_dau"/>
+                            <field name="han_chot"/>
+                            <field name="so_ngay_thuc_hien"/>
+                        </group>
+
+                        <group string="Trạng thái và Ưu tiên">
+                            <field name="trang_thai"/>
+                            <field name="muc_uu_tien"/>
+                        </group>
+                        
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_nhiem_vu_tree" model="ir.ui.view">
+            <field name="name">nhiem_vu_tree</field>
+            <field name="model">nhiem_vu</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ten_nhiem_vu"/>
+                    <field name="du_an_id"/>
+                    <field name="so_luong_nguoi_thuc_hien" string="SL Người thực hiện"/>
+                    <field name="so_luong_nguoi_phu_trach" string="SL Người phụ trách"/>
+                    <field name="ngay_bat_dau"/>
+                    <field name="han_chot"/>
+                    <field name="so_ngay_thuc_hien"/>
+                    <field name="trang_thai"/>
+                    <field name="muc_uu_tien"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_nhiem_vu_search" model="ir.ui.view">
+            <field name="name">nhiem_vu_search</field>
+            <field name="model">nhiem_vu</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="ten_nhiem_vu"/>
+                    <field name="du_an_id"/>
+                    <field name="nguoi_thuc_hien_id"/>
+                    <field name="nguoi_phu_trach_id"/>
+                    <field name="ngay_bat_dau"/>
+                    <field name="han_chot"/>
+                    <field name="trang_thai"/>
+                    <field name="muc_uu_tien"/>
+                    <searchpanel>
+                        <field name="du_an_id" select="multi"/>
+                    </searchpanel>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_nhiem_vu" model="ir.actions.act_window">
+            <field name="name">Nhiệm Vụ</field>
+            <field name="res_model">nhiem_vu</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_nhiem_vu_search"/>
+        </record>
+    </data>
+</odoo>

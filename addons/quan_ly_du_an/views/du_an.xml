@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- FORM VIEW -->
+        <record id="view_du_an_form" model="ir.ui.view">
+            <field name="name">du_an_form</field>
+            <field name="model">du_an</field>  
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <h2>Công việc</h2>
+                        <group col="4" string="Thông tin chung">
+                            <field name="ten_du_an"/>
+                            <field name="ngan_sach"/>
+                            <field name="trang_thai" widget="statusbar" options="{'clickable': 'True'}"/>
+                            <field name="muc_uu_tien"/>
+                            <field name="ngay_bat_dau"/>
+                            <field name="ngay_ket_thuc"/>
+                            <field name="mo_ta" widget="text"/>
+                            <field name="so_luong_nhan_vien"/>
+                            <field name="so_luong_nhiem_vu"/>
+                            <field name="tien_do_du_an" widget="progressbar"/>
+                        </group>
+                        <group string="Nhân viên phụ trách">
+                            <field name="nhan_vien_ids" widget="many2many_tags"/>
+                        </group>
+                        <notebook>
+                            <page string="Nhiệm vụ dự án">
+                                <field name="nhiem_vu_ids">
+                                    <tree>
+                                        <field name="ten_nhiem_vu"/>
+                                        <field name="trang_thai"/>
+                                        <field name="muc_uu_tien"/>
+                                        <field name="han_chot"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- TREE VIEW -->
+        <record id="view_du_an_tree" model="ir.ui.view">
+            <field name="name">du_an_tree</field>
+            <field name="model">du_an</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ten_du_an"/>
+                    <field name="ngan_sach"/>
+                    <field name="trang_thai"
+                           class="oe_inline"
+                           decoration-info="trang_thai == 'dang_thuc_hien'"
+                           decoration-success="trang_thai == 'hoan_thanh'"
+                           decoration-warning="trang_thai == 'tam_dung'"
+                           decoration-danger="trang_thai == 'huy_bo'"/>
+                    <field name="muc_uu_tien"
+                           class="oe_inline"
+                           decoration-muted="muc_uu_tien == 'thap'"
+                           decoration-primary="muc_uu_tien == 'trung_binh'"
+                           decoration-warning="muc_uu_tien == 'cao'"
+                           decoration-danger="muc_uu_tien == 'khan_cap'"/>
+                    <field name="ngay_bat_dau"/>
+                    <field name="ngay_ket_thuc"/>
+                    <field name="so_luong_nhan_vien"/>
+                    <field name="so_luong_nhiem_vu"/>
+                    <field name="tien_do_du_an" widget="progressbar"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- SEARCH VIEW -->
+        <record id="du_an_search" model="ir.ui.view">
+            <field name="model">du_an</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="ten_du_an"/>
+                    <field name="ngan_sach"/>
+                    <field name="trang_thai"/>
+                    <field name="muc_uu_tien"/>
+                    <field name="ngay_bat_dau"/>
+                    <field name="ngay_ket_thuc"/>
+                    <field name="so_luong_nhiem_vu"/>
+                    <field name="tien_do_du_an"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- ACTION -->
+        <record id="action_du_an" model="ir.actions.act_window">
+            <field name="name">Dự án</field>
+            <field name="res_model">du_an</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="du_an_search"/>
+        </record>
+    </data>
+</odoo>

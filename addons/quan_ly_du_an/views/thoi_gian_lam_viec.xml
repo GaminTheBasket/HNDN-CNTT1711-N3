@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_thoi_gian_lam_viec_form" model="ir.ui.view">
+        <field name="name">thoi_gian_lam_viec_form</field>
+        <field name="model">thoi_gian_lam_viec</field>
+        <field name="arch" type="xml">
+            <form string="Thời Gian Làm Việc">
+                <sheet>
+                    <group>
+                        <field name="nhiem_vu_id" required="1"/>
+                        <field name="so_luong_nhan_vien" readonly="1"/>
+                        <field name="nhan_vien_id" widget="many2many_tags" required="1"/>
+                        <field name="so_gio" required="1"/>
+                        <field name="ngay_lam_viec"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_thoi_gian_lam_viec_tree" model="ir.ui.view">
+        <field name="name">thoi_gian_lam_viec_tree</field>
+        <field name="model">thoi_gian_lam_viec</field>
+        <field name="arch" type="xml">
+            <tree string="Thời Gian Làm Việc">
+                <field name="nhiem_vu_id"/>
+                <field name="so_luong_nhan_vien" readonly="1"/>
+                <field name="so_gio"/>
+                <field name="ngay_lam_viec"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_thoi_gian_lam_viec" model="ir.actions.act_window">
+        <field name="name">Thời Gian Làm Việc</field>
+        <field name="res_model">thoi_gian_lam_viec</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_thoi_gian_lam_viec" name="Thời Gian Làm Việc"
+              parent="base.menu_custom"
+              action="action_thoi_gian_lam_viec"/>
+</odoo>

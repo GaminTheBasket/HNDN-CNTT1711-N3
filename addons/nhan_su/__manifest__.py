@@ -3,11 +3,14 @@
     'name': "nhan_su",
 
     'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+        Module HRM - Nguồn dữ liệu gốc nhân sự cho toàn hệ thống (Tích hợp hệ thống)
+    """,
 
     'description': """
-        Long description of module's purpose
+        Quản lý nhân sự (HRM). Dữ liệu nhân viên (model nhan_vien) là dữ liệu gốc,
+        đồng bộ sang các module khác (Dự án, Công việc, Lương...) theo yêu cầu tích hợp.
+        Các module khác bắt buộc phụ thuộc nhan_su và sử dụng chung model nhan_vien,
+        không nhập liệu trùng lặp.
     """,
 
     'author': "My Company",

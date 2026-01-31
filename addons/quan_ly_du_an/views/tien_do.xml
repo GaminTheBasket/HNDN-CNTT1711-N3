@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_tien_do_form" model="ir.ui.view">
+        <field name="name">tien_do_form</field>
+        <field name="model">tien_do</field>
+        <field name="arch" type="xml">
+            <form string="Tiến Độ Công Việc">
+                <sheet>
+                    <group>
+                        <field name="du_an_id" />
+                        <field name="phan_tram_hoan_thanh" widget="progressbar"/>
+                        <field name="trang_thai_du_an" readonly="1"/>
+                        <field name="ghi_chu"/>
+                        <field name="ngay_cap_nhat" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_tien_do_tree" model="ir.ui.view">
+        <field name="name">tien_do_tree</field>
+        <field name="model">tien_do</field>
+        <field name="arch" type="xml">
+            <tree string="Tiến Độ Công Việc">
+                <field name="du_an_id"/>
+                <field name="phan_tram_hoan_thanh" widget="progressbar"/>
+                <field name="trang_thai_du_an"/>
+                <field name="ngay_cap_nhat"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_tien_do" model="ir.actions.act_window">
+        <field name="name">Tiến Độ Công Việc</field>
+        <field name="res_model">tien_do</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_tien_do" name="Tiến Độ Công Việc"
+              parent="base.menu_custom"
+              action="action_tien_do"/>
+</odoo>

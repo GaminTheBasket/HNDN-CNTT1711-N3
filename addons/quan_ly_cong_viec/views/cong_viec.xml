@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_cong_viec_form" model="ir.ui.view">
+            <field name="name">cong_viec</field>
+            <field name="model">cong_viec</field>
+            <field name="arch" type="xml">
+                <form>
+                    <sheet>
+                        <div class="oe_read_only" style="font-size:25px">Công việc</div>
+                        <group col="4" string="Thông tin chung">
+                            <field name="ten_cong_viec"/>
+                            <field name="du_an_id"/>
+                            <field name="nhan_vien_id"/>
+                            <field name="trang_thai"/>
+                            <field name="han_hoan_thanh"/>
+                            <field name="tien_do"/>
+                            <field name="ngay_bat_dau"/>
+                            <field name="ngay_ket_thuc"/>
+                            <field name="mo_ta"/>
+                        </group>
+                        <notebook>
+                            <page string= "Công việc con">
+                                <field name= "cong_viec_con_ids"/>
+                            </page>
+                            <page string= "Ghi nhận thời gian">
+                                <field name= "ghi_nhan_thoi_gian_ids"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_cong_viec_tree" model="ir.ui.view">
+            <field name="name">cong_viec</field>
+            <field name="model">cong_viec</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="ten_cong_viec"/>
+                    <field name="du_an_id"/>
+                    <field name="nhan_vien_id"/>
+                    <field name="trang_thai"/>
+                    <field name="han_hoan_thanh"/>
+                    <field name="tien_do"/>
+                    <field name="ngay_bat_dau"/>
+                    <field name="ngay_ket_thuc"/>
+                    <field name="mo_ta"/>
+                </tree>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="cong_viec_search">
+            <field name="model">cong_viec</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="ten_cong_viec"/>
+                    <field name="du_an_id"/>
+                    <field name="nhan_vien_id"/>
+                    <field name="trang_thai"/>
+                    <field name="han_hoan_thanh"/>
+                    <field name="tien_do"/>
+                    <field name="ngay_bat_dau"/>
+                    <field name="ngay_ket_thuc"/>
+                    <field name="mo_ta"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_cong_viec" model="ir.actions.act_window">
+            <field name="name">Công việc</field>
+            <field name="res_model">cong_viec</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref = "cong_viec_search"/>
+        </record>
+    </data>
+</odoo>
+        
+    

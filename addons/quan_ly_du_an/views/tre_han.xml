@@ -1,0 +1,42 @@
+<odoo>
+    <record id="view_tre_han_tree" model="ir.ui.view">
+        <field name="name">tre.han.tree</field>
+        <field name="model">tre_han</field>
+        <field name="arch" type="xml">
+            <tree string="Danh Sách Trễ Hạn">
+                <field name="nhiem_vu_id"/>
+                <field name="du_an_id"/>
+                <field name="han_chot"/>
+                <field name="so_ngay_tre"/>
+                <field name="canh_bao" widget="boolean"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_tre_han_form" model="ir.ui.view">
+        <field name="name">tre.han.form</field>
+        <field name="model">tre_han</field>
+        <field name="arch" type="xml">
+            <form string="Chi Tiết Trễ Hạn">
+                <sheet>
+                    <group>
+                        <field name="nhiem_vu_id"/>
+                        <field name="du_an_id"/>
+                        <field name="han_chot"/>
+                        <field name="ngay_hien_tai"/>
+                        <field name="so_ngay_tre"/>
+                        <field name="canh_bao"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_tre_han" model="ir.actions.act_window">
+        <field name="name">Trễ Hạn</field>
+        <field name="res_model">tre_han</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_tre_han" name="Trễ Hạn" parent="menu_du_an" action="action_tre_han"/>
+</odoo>

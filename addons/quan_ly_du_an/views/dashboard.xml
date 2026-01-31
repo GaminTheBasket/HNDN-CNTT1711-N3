@@ -1,0 +1,38 @@
+<odoo>
+    <record id="view_graph_trang_thai" model="ir.ui.view">
+        <field name="name">du.an.graph.trang_thai</field>
+        <field name="model">du_an</field>
+        <field name="arch" type="xml">
+            <graph string="Thống kê Trạng Thái Dự Án" type="pie">
+                <field name="trang_thai" type="row"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_graph_uu_tien" model="ir.ui.view">
+        <field name="name">du.an.graph.uu_tien</field>
+        <field name="model">du_an</field>
+        <field name="arch" type="xml">
+            <graph string="Thống kê Mức Độ Ưu Tiên" type="pie">
+                <field name="muc_uu_tien" type="row"/>
+                <field name="id" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_dashboard_trang_thai" model="ir.actions.act_window">
+        <field name="name">Thống kê trạng thái</field>
+        <field name="res_model">du_an</field>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="view_graph_trang_thai"/>
+    </record>
+
+    <record id="action_dashboard_uu_tien" model="ir.actions.act_window">
+        <field name="name">Thống kê mức độ ưu tiên</field>
+        <field name="res_model">du_an</field>
+        <field name="view_mode">graph</field>
+        <field name="view_id" ref="view_graph_uu_tien"/>
+    </record>
+
+</odoo>
