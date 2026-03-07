@@ -2,29 +2,50 @@
 <odoo>
     <data>
         <record id="view_cong_viec_form" model="ir.ui.view">
-            <field name="name">cong_viec</field>
+            <field name="name">cong_viec.form</field>
             <field name="model">cong_viec</field>
             <field name="arch" type="xml">
-                <form>
+                <form string="Thông tin công việc">
+                    <header>
+                        <field name="trang_thai" widget="statusbar" statusbar_visible="moi,dang_thuc_hien,dang_cho,hoan_thanh"/>
+                    </header>
                     <sheet>
-                        <div class="oe_read_only" style="font-size:25px">Công việc</div>
-                        <group col="4" string="Thông tin chung">
-                            <field name="ten_cong_viec"/>
-                            <field name="du_an_id"/>
-                            <field name="nhan_vien_id"/>
-                            <field name="trang_thai"/>
-                            <field name="han_hoan_thanh"/>
-                            <field name="tien_do"/>
-                            <field name="ngay_bat_dau"/>
-                            <field name="ngay_ket_thuc"/>
-                            <field name="mo_ta"/>
+                        <div class="oe_title">
+                            <h1>
+                                <field name="ten_cong_viec" placeholder="Nhập tên công việc (VD: Thiết kế kỹ năng Boss)..."/>
+                            </h1>
+                        </div>
+                        
+                        <group>
+                            <group string="Phân loại &amp; Phụ trách">
+                                <field name="du_an_id"/>
+                                <field name="loai_task"/>
+                                <field name="nhan_vien_id"/>
+                            </group>
+                            <group string="Thời gian &amp; Tiến độ">
+                                <field name="ngay_bat_dau"/>
+                                <field name="han_hoan_thanh"/>
+                                <field name="ngay_ket_thuc"/>
+                                <field name="tien_do" widget="progressbar"/>
+                            </group>
                         </group>
+
                         <notebook>
-                            <page string= "Công việc con">
-                                <field name= "cong_viec_con_ids"/>
+                            <page string="Mô tả công việc">
+                                <field name="mo_ta" placeholder="Nhập mô tả chi tiết, cốt truyện, yêu cầu của game vào đây..."/>
                             </page>
-                            <page string= "Ghi nhận thời gian">
-                                <field name= "ghi_nhan_thoi_gian_ids"/>
+                            <page string="Tóm tắt từ AI">
+                                <p class="text-muted">AI sẽ đọc mô tả và tự động tóm tắt các ý chính vào đây.</p>
+                                <field name="tom_tat_ai" readonly="1" force_save="1"/>
+                            </page>
+                            <page string="Công việc con">
+                                <field name="cong_viec_con_ids"/>
+                            </page>
+                            <page string="Ghi nhận thời gian">
+                                <field name="ghi_nhan_thoi_gian_ids"/>
+                            </page>
+                            <page string="Đánh giá công việc">
+                                <field name="danh_gia_cong_viec_ids"/>
                             </page>
                         </notebook>
                     </sheet>
@@ -33,36 +54,38 @@
         </record>
 
         <record id="view_cong_viec_tree" model="ir.ui.view">
-            <field name="name">cong_viec</field>
+            <field name="name">cong_viec.tree</field>
             <field name="model">cong_viec</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="ten_cong_viec"/>
                     <field name="du_an_id"/>
+                    <field name="loai_task"/>
                     <field name="nhan_vien_id"/>
-                    <field name="trang_thai"/>
                     <field name="han_hoan_thanh"/>
-                    <field name="tien_do"/>
-                    <field name="ngay_bat_dau"/>
-                    <field name="ngay_ket_thuc"/>
-                    <field name="mo_ta"/>
+                    <field name="tien_do" widget="progressbar"/>
+                    <field name="trang_thai" widget="badge" 
+                           decoration-info="trang_thai == 'moi'" 
+                           decoration-warning="trang_thai == 'dang_thuc_hien'" 
+                           decoration-success="trang_thai == 'hoan_thanh'" 
+                           decoration-danger="trang_thai in ('tam_hoan', 'da_huy', 'qua_han')"/>
                 </tree>
             </field>
         </record>
 
         <record model="ir.ui.view" id="cong_viec_search">
+            <field name="name">cong_viec.search</field>
             <field name="model">cong_viec</field>
             <field name="arch" type="xml">
                 <search>
                     <field name="ten_cong_viec"/>
                     <field name="du_an_id"/>
                     <field name="nhan_vien_id"/>
-                    <field name="trang_thai"/>
-                    <field name="han_hoan_thanh"/>
-                    <field name="tien_do"/>
-                    <field name="ngay_bat_dau"/>
-                    <field name="ngay_ket_thuc"/>
-                    <field name="mo_ta"/>
+                    <group expand="0" string="Nhóm theo">
+                        <filter string="Theo Dự án" name="group_du_an" context="{'group_by':'du_an_id'}"/>
+                        <filter string="Theo Nhân viên" name="group_nhan_vien" context="{'group_by':'nhan_vien_id'}"/>
+                        <filter string="Theo Trạng thái" name="group_trang_thai" context="{'group_by':'trang_thai'}"/>
+                    </group>
                 </search>
             </field>
         </record>
@@ -71,9 +94,7 @@
             <field name="name">Công việc</field>
             <field name="res_model">cong_viec</field>
             <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref = "cong_viec_search"/>
+            <field name="search_view_id" ref="cong_viec_search"/>
         </record>
     </data>
 </odoo>
-        
-    

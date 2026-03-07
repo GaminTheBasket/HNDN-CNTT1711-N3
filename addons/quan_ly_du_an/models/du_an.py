@@ -3,16 +3,43 @@ import json
 
 class DuAn(models.Model):
     _name = 'du_an'
-    _description = 'Quản lý dự án'
+    _description = 'Quản lý dự án Game Studio'
 
+    # --- THÔNG TIN CHUNG ---
     ten_du_an = fields.Char("Tên dự án", required=True)
     ngan_sach = fields.Float("Ngân sách dự án", required=True)
     ngay_bat_dau = fields.Date("Ngày bắt đầu", required=True)
     ngay_ket_thuc = fields.Date("Ngày kết thúc", required=True)
     mo_ta = fields.Text("Mô tả chi tiết dự án")
 
+    # --- ĐẶC THÙ CHO GAME STUDIO (MỚI THÊM) ---
+    giai_doan_game = fields.Selection([
+        ('concept', 'Lên ý tưởng (Concept)'),
+        ('pre_production', 'Tiền kỳ (Pre-production)'),
+        ('alpha', 'Alpha Test'),
+        ('beta', 'Beta Test'),
+        ('early_access', 'Early Access'),
+        ('release', 'Phát hành (Release)')
+    ], string="Giai đoạn phát triển", default='concept')
+
+    # --- LIÊN KẾT MODULE KHÁC ---
     nhiem_vu_ids = fields.One2many("nhiem_vu", "du_an_id", string="Nhiệm vụ dự án")
     tien_do_ids = fields.One2many("tien_do", "du_an_id", string="Tiến Độ Dự Án")
+    nhan_vien_ids = fields.Many2many(
+        'nhan_vien',
+        'du_an_nhan_vien_rel',
+        'du_an_id',
+        'nhan_vien_id',
+        string="Nhân viên thực hiện"
+    )
+
+    # --- TRẠNG THÁI & ƯU TIÊN ---
+    muc_uu_tien = fields.Selection([
+        ('thap', 'Thấp'),
+        ('trung_binh', 'Trung bình'),
+        ('cao', 'Cao'),
+        ('khan_cap', 'Khẩn cấp')
+    ], string="Mức ưu tiên", default="thap")
 
     trang_thai = fields.Selection([
         ('dang_thuc_hien', 'Đang thực hiện'),
@@ -21,14 +48,20 @@ class DuAn(models.Model):
         ('huy_bo', 'Hủy bỏ')
     ], string="Trạng thái", default="dang_thuc_hien", compute="_compute_trang_thai", store=True)
 
+    # --- CÁC TRƯỜNG TÍNH TOÁN (Giữ nguyên của bạn) ---
+    so_luong_nhan_vien = fields.Integer("Số người phụ trách", compute="_tinh_so_luong_nhan_vien", store=True)
+    so_luong_nhiem_vu = fields.Integer("Số nhiệm vụ", compute="_compute_so_luong_nhiem_vu", store=True)
+    tien_do_du_an = fields.Float(string="Tiến Độ Dự Án (%)", compute="_compute_tien_do_du_an", store=True)
+
+    # ==========================================
+    # CÁC HÀM XỬ LÝ LOGIC (Giữ nguyên 100%)
+    # ==========================================
     @api.depends("nhiem_vu_ids.trang_thai")
     def _compute_trang_thai(self):
         for record in self:
             if not record.nhiem_vu_ids:
                 continue
-
             trang_thai_nhiem_vu = record.nhiem_vu_ids.mapped("trang_thai")
-
             if all(trang_thai == "hoan_thanh" for trang_thai in trang_thai_nhiem_vu):
                 record.trang_thai = "hoan_thanh"
             elif any(trang_thai == "dang_thuc_hien" for trang_thai in trang_thai_nhiem_vu):
@@ -38,38 +71,25 @@ class DuAn(models.Model):
             else:
                 record.trang_thai = "dang_thuc_hien"
 
-    muc_uu_tien = fields.Selection([
-        ('thap', 'Thấp'),
-        ('trung_binh', 'Trung bình'),
-        ('cao', 'Cao'),
-        ('khan_cap', 'Khẩn cấp')
-    ], string="Mức ưu tiên", default="thap")
-
-    nhan_vien_ids = fields.Many2many(
-        'nhan_vien',
-        'du_an_nhan_vien_rel',
-        'du_an_id',
-        'nhan_vien_id',
-        string="Nhân viên thực hiện"
-    )
-
-    so_luong_nhan_vien = fields.Integer(
-        "Số người phụ trách", compute="_tinh_so_luong_nhan_vien", store=True
-    )
-
     @api.depends("nhan_vien_ids")
     def _tinh_so_luong_nhan_vien(self):
         for record in self:
             record.so_luong_nhan_vien = len(record.nhan_vien_ids)
 
-    so_luong_nhiem_vu = fields.Integer(
-        "Số nhiệm vụ", compute="_compute_so_luong_nhiem_vu", store=True
-    )
-
     @api.depends("nhiem_vu_ids")
     def _compute_so_luong_nhiem_vu(self):
         for record in self:
             record.so_luong_nhiem_vu = len(record.nhiem_vu_ids)
+
+    @api.depends('nhiem_vu_ids.trang_thai')
+    def _compute_tien_do_du_an(self):
+        for record in self:
+            nhiem_vu_count = len(record.nhiem_vu_ids)
+            if nhiem_vu_count > 0:
+                hoan_thanh_count = sum(1 for nv in record.nhiem_vu_ids if nv.trang_thai == 'hoan_thanh')
+                record.tien_do_du_an = (hoan_thanh_count / nhiem_vu_count) * 100
+            else:
+                record.tien_do_du_an = 0.0
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -98,18 +118,6 @@ class DuAn(models.Model):
             name = f"{record.ten_du_an} "
             result.append((record.id, name))
         return result
-
-    tien_do_du_an = fields.Float(string="Tiến Độ Dự Án (%)", compute="_compute_tien_do_du_an", store=True)
-
-    @api.depends('nhiem_vu_ids.trang_thai')
-    def _compute_tien_do_du_an(self):
-        for record in self:
-            nhiem_vu_count = len(record.nhiem_vu_ids)
-            if nhiem_vu_count > 0:
-                hoan_thanh_count = sum(1 for nv in record.nhiem_vu_ids if nv.trang_thai == 'hoan_thanh')
-                record.tien_do_du_an = (hoan_thanh_count / nhiem_vu_count) * 100
-            else:
-                record.tien_do_du_an = 0.0
 
     @api.model
     def get_trang_thai_du_an_data(self):

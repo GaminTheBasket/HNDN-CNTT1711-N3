@@ -2,66 +2,93 @@
 <odoo>
     <data>
         <record id="view_nhan_vien_form" model="ir.ui.view">
-            <field name="name">nhan_vien</field>
+            <field name="name">nhan_vien.form</field>
             <field name="model">nhan_vien</field>
             <field name="arch" type="xml">
-                <form>
+                <form string="Thông tin nhân viên">
                     <sheet>
-                        <div class="oe_read_only" style="font-size:25px">Nhân viên</div>
-                        <group col="4" string="Thông tin chung">
-                            <field name="ho_ten_dem"/>
-                            <field name="ten"/>
-                            <field name="ho_va_ten"/>
-                            <field name="ma_dinh_danh"/>
-                            <field name="ngay_sinh"/>
-                            <field name="tuoi"/>
-                            <field name="so_nguoi_bang_tuoi"/>
-                            <field name="que_quan"/>
-                            <field name="email"/>
-                            <field name="anh" widget="image"/>
+                        <field name="anh" widget="image" class="oe_avatar"/>
+                        
+                        <div class="oe_title">
+                            <h1>
+                                <field name="ho_va_ten" placeholder="Họ và Tên" readonly="1" force_save="1"/>
+                            </h1>
+                            <h2>
+                                <field name="ma_dinh_danh" placeholder="Mã định danh sinh tự động" readonly="1" force_save="1"/>
+                            </h2>
+                        </div>
+
+                        <group>
+                            <group string="Thông tin cá nhân">
+                                <field name="ho_ten_dem"/>
+                                <field name="ten"/>
+                                <field name="ngay_sinh"/>
+                                <field name="tuoi" readonly="1" force_save="1"/>
+                                <field name="que_quan"/>
+                                <field name="so_dien_thoai"/>
+                                <field name="email"/>
+                            </group>
+                            <group string="Thông định công tác">
+                                <field name="trang_thai_lam_viec" widget="badge" decoration-success="trang_thai_lam_viec == 'chinh_thuc'" decoration-info="trang_thai_lam_viec == 'thu_viec'"/>
+                                <field name="vai_tro"/>
+                                <field name="phong_ban"/>
+                                <field name="ky_nang"/>
+                            </group>
                         </group>
+
                         <notebook>
-                            <page string="Danh sách lịch sử công tác">
-                                <field name="lich_su_cong_tac_ids"/>
+                            <page string="Công việc &amp; Dự án">
+                                <p class="text-muted">Tính năng đang chờ hoàn thiện module Quản lý Công việc.</p>
+                                </page>
+                            <page string="Tài sản đang giữ">
+                                <p class="text-muted">Tính năng đang chờ hoàn thiện module Quản lý Tài sản.</p>
+                                </page>
+                            <page string="Lịch sử công tác">
+                                <field name="lich_su_cong_tac_ids">
+                                    <tree editable="bottom">
+                                        </tree>
+                                </field>
                             </page>
-                            <page string="Danh sách chứng chỉ bằng cấp">
+                            <page string="Chứng chỉ &amp; Bằng cấp">
                                 <field name="danh_sach_chung_chi_bang_cap_ids"/>
                             </page>
                         </notebook>
                     </sheet>
-                    
                 </form>
             </field>
         </record>
 
         <record id="view_nhan_vien_tree" model="ir.ui.view">
-            <field name="name">nhan_vien</field>
+            <field name="name">nhan_vien.tree</field>
             <field name="model">nhan_vien</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="ma_dinh_danh"/>
-                    <field name="ho_ten_dem"/>
-                    <field name="ten"/>
                     <field name="ho_va_ten"/>
-                    <field name="ngay_sinh"/>
-                    <field name="tuoi"/>
-                    <field name="so_nguoi_bang_tuoi"/>
-                    <field name="que_quan"/>
+                    <field name="phong_ban"/>
+                    <field name="vai_tro"/>
+                    <field name="trang_thai_lam_viec" widget="badge" decoration-success="trang_thai_lam_viec == 'chinh_thuc'"/>
                     <field name="email"/>
                 </tree>
             </field>
         </record>
 
         <record model="ir.ui.view" id="nhan_vien_search">
+            <field name="name">nhan_vien.search</field>
             <field name="model">nhan_vien</field>
             <field name="arch" type="xml">
                 <search>
                     <field name="ma_dinh_danh"/>
                     <field name="ho_va_ten"/>
-                    <field name="ngay_sinh"/>
-                    <field name="tuoi"/>
-                    <field name="que_quan"/>
-                    <field name="email"/>
+                    <field name="phong_ban"/>
+                    <field name="vai_tro"/>
+                    <separator/>
+                    <filter string="Chính thức" name="chinh_thuc" domain="[('trang_thai_lam_viec', '=', 'chinh_thuc')]"/>
+                    <filter string="Thử việc" name="thu_viec" domain="[('trang_thai_lam_viec', '=', 'thu_viec')]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Phòng ban" name="group_phong_ban" context="{'group_by':'phong_ban'}"/>
+                        <filter string="Vai trò" name="group_vai_tro" context="{'group_by':'vai_tro'}"/>
+                    </group>
                 </search>
             </field>
         </record>
@@ -70,9 +97,7 @@
             <field name="name">Nhân viên</field>
             <field name="res_model">nhan_vien</field>
             <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref = "nhan_vien_search"/>
+            <field name="search_view_id" ref="nhan_vien_search"/>
         </record>
     </data>
 </odoo>
-        
-    
