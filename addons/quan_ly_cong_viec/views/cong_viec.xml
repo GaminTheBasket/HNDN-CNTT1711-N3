@@ -7,15 +7,15 @@
             <field name="arch" type="xml">
                 <form string="Thông tin công việc">
                     <header>
-                        <field name="trang_thai" widget="statusbar" statusbar_visible="moi,dang_thuc_hien,dang_cho,hoan_thanh"/>
+                        <button name="action_tom_tat_ai" type="object" string="✨ Nhờ AI Tóm Tắt" class="oe_highlight"/>
+                        <field name="trang_thai" widget="statusbar" statusbar_visible="moi,dang_thuc_hien,dang_cho,hoan_thanh" options="{'clickable': '1'}"/>
                     </header>
                     <sheet>
                         <div class="oe_title">
                             <h1>
-                                <field name="ten_cong_viec" placeholder="Nhập tên công việc (VD: Thiết kế kỹ năng Boss)..."/>
+                                <field name="ten_cong_viec" placeholder="Nhập tên công việc..."/>
                             </h1>
                         </div>
-                        
                         <group>
                             <group string="Phân loại &amp; Phụ trách">
                                 <field name="du_an_id"/>
@@ -26,21 +26,23 @@
                                 <field name="ngay_bat_dau"/>
                                 <field name="han_hoan_thanh"/>
                                 <field name="ngay_ket_thuc"/>
+                                <field name="tong_thoi_gian_luy_ke" widget="float_time" string="Giờ làm thực tế (Máy đếm)"/>
                                 <field name="tien_do" widget="progressbar"/>
                             </group>
                         </group>
-
                         <notebook>
                             <page string="Mô tả công việc">
-                                <field name="mo_ta" placeholder="Nhập mô tả chi tiết, cốt truyện, yêu cầu của game vào đây..."/>
+                                <field name="mo_ta" placeholder="Dán đoạn yêu cầu dài ngoằng của Sếp vào đây để AI đọc..."/>
                             </page>
                             <page string="Tóm tắt từ AI">
-                                <p class="text-muted">AI sẽ đọc mô tả và tự động tóm tắt các ý chính vào đây.</p>
-                                <field name="tom_tat_ai" readonly="1" force_save="1"/>
+                                <p class="text-info"><strong>🤖 Trợ lý AI Gemini:</strong> Dưới đây là tóm tắt các ý chính để bạn dễ nắm bắt công việc nhé!</p>
+                                <field name="tom_tat_ai" readonly="1" force_save="1" style="border: 2px dashed #17a2b8; padding: 10px; background-color: #f8f9fa;"/>
                             </page>
-                            <page string="Công việc con">
+                            
+                            <page string="Công việc con" invisible="1">
                                 <field name="cong_viec_con_ids"/>
                             </page>
+                            
                             <page string="Ghi nhận thời gian">
                                 <field name="ghi_nhan_thoi_gian_ids"/>
                             </page>
@@ -64,12 +66,58 @@
                     <field name="nhan_vien_id"/>
                     <field name="han_hoan_thanh"/>
                     <field name="tien_do" widget="progressbar"/>
-                    <field name="trang_thai" widget="badge" 
-                           decoration-info="trang_thai == 'moi'" 
-                           decoration-warning="trang_thai == 'dang_thuc_hien'" 
-                           decoration-success="trang_thai == 'hoan_thanh'" 
-                           decoration-danger="trang_thai in ('tam_hoan', 'da_huy', 'qua_han')"/>
+                    <field name="trang_thai" widget="badge" decoration-info="trang_thai == 'moi'" decoration-warning="trang_thai == 'dang_thuc_hien'" decoration-success="trang_thai == 'hoan_thanh'"/>
                 </tree>
+            </field>
+        </record>
+
+        <record id="view_cong_viec_kanban" model="ir.ui.view">
+            <field name="name">cong_viec.kanban</field>
+            <field name="model">cong_viec</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="trang_thai" class="o_kanban_small_column" records_draggable="true">
+                    <field name="ten_cong_viec"/>
+                    <field name="du_an_id"/>
+                    <field name="nhan_vien_id"/>
+                    <field name="loai_task"/>
+                    <field name="han_hoan_thanh"/>
+                    <field name="tien_do"/>
+                    <field name="trang_thai"/>
+                    
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_global_click" style="border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                                <div class="oe_kanban_details">
+                                    <strong class="o_kanban_record_title" style="font-size: 14px; color: #333;">
+                                        <field name="ten_cong_viec"/>
+                                    </strong>
+                                    
+                                    <div class="mt-2 mb-2">
+                                        <span class="badge rounded-pill text-bg-info">
+                                            <field name="loai_task"/>
+                                        </span>
+                                    </div>
+                                    
+                                    <div style="font-size: 12px; color: #666;">
+                                        <div><i class="fa fa-folder-open-o" title="Dự án"></i> <field name="du_an_id"/></div>
+                                        <div class="mt-1"><i class="fa fa-calendar" title="Deadline"></i> Hạn: <strong><field name="han_hoan_thanh"/></strong></div>
+                                    </div>
+                                    
+                                    <div class="mt-2 mb-2">
+                                        <field name="tien_do" widget="progressbar"/>
+                                    </div>
+                                    
+                                    <div class="o_kanban_record_bottom mt-2">
+                                        <div class="oe_kanban_bottom_left" style="font-size: 12px; font-weight: bold; color: #007bff;">
+                                            <i class="fa fa-user" title="Phụ trách"></i>
+                                            <span class="ms-1"><field name="nhan_vien_id"/></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
             </field>
         </record>
 
@@ -90,10 +138,33 @@
             </field>
         </record>
 
+        <record id="view_cong_viec_graph" model="ir.ui.view">
+            <field name="name">cong_viec.graph</field>
+            <field name="model">cong_viec</field>
+            <field name="arch" type="xml">
+                <graph string="Thống kê hiệu suất Công việc" type="bar">
+                    <field name="nhan_vien_id" type="row"/>
+                    <field name="trang_thai" type="col"/>
+                </graph>
+            </field>
+        </record>
+
+        <record id="view_cong_viec_pivot" model="ir.ui.view">
+            <field name="name">cong_viec.pivot</field>
+            <field name="model">cong_viec</field>
+            <field name="arch" type="xml">
+                <pivot string="Bảng phân tích Công việc">
+                    <field name="nhan_vien_id" type="row"/>
+                    <field name="trang_thai" type="col"/>
+                    <field name="tien_do" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
         <record id="action_cong_viec" model="ir.actions.act_window">
-            <field name="name">Công việc</field>
+            <field name="name">Quản lý Công việc</field>
             <field name="res_model">cong_viec</field>
-            <field name="view_mode">tree,form</field>
+            <field name="view_mode">kanban,tree,form,graph,pivot</field>
             <field name="search_view_id" ref="cong_viec_search"/>
         </record>
     </data>

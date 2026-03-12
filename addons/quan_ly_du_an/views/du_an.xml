@@ -2,44 +2,56 @@
 <odoo>
     <data>
         <record id="view_du_an_form" model="ir.ui.view">
-            <field name="name">du_an_form</field>
-            <field name="model">du_an</field>  
+            <field name="name">du_an.form</field>
+            <field name="model">du_an</field>
             <field name="arch" type="xml">
-                <form string="Thông tin dự án">
+                <form string="Thông tin Dự án">
+                    
                     <header>
-                        <field name="trang_thai" widget="statusbar" statusbar_visible="dang_thuc_hien,tam_dung,hoan_thanh" force_save="1"/>
+                        <field name="trang_thai" widget="statusbar" statusbar_visible="dang_thuc_hien,tam_dung,hoan_thanh,huy_bo"/>
                     </header>
+                    
                     <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_mo_danh_sach_nhiem_vu" type="object" class="oe_stat_button" icon="fa-tasks">
+                                <field name="tong_so_nhiem_vu" widget="statinfo" string="Tổng số Task"/>
+                            </button>
+                            <button name="action_mo_danh_sach_nhiem_vu" type="object" class="oe_stat_button" icon="fa-check-square-o">
+                                <field name="tong_nhiem_vu_hoan_thanh" widget="statinfo" string="Đã Hoàn Thành"/>
+                            </button>
+                            <button class="oe_stat_button" icon="fa-users" style="pointer-events: none;">
+                                <field name="so_luong_nhan_vien" widget="statinfo" string="Nhân Sự"/>
+                            </button>
+                        </div>
+                        
                         <div class="oe_title">
-                            <label for="ten_du_an" class="oe_edit_only" string="Tên Dự Án Game"/>
+                            <label for="ten_du_an" string="Tên Dự Án Game"/>
                             <h1>
-                                <field name="ten_du_an" placeholder="VD: Dự án RPG Thế Giới Mở - Bản Alpha..."/>
+                                <field name="ten_du_an" placeholder="Nhập tên dự án..."/>
                             </h1>
                         </div>
-
+                        
                         <group>
                             <group string="Thông tin chung">
                                 <field name="giai_doan_game"/>
                                 <field name="muc_uu_tien"/>
                                 <field name="ngan_sach"/>
                             </group>
-                            <group string="Thời gian &amp; Tiến độ">
+                            <group string="Thời gian &amp; Nhân sự">
                                 <field name="ngay_bat_dau"/>
                                 <field name="ngay_ket_thuc"/>
                                 <field name="tien_do_du_an" widget="progressbar"/>
-                                <field name="so_luong_nhan_vien"/>
-                                <field name="so_luong_nhiem_vu"/>
                             </group>
                         </group>
-
+                        
                         <notebook>
                             <page string="Mô tả &amp; Game Design">
                                 <field name="mo_ta" placeholder="Mô tả cốt truyện, lối chơi, mục tiêu của dự án..."/>
                             </page>
                             <page string="Nhân sự tham gia">
-                                <field name="nhan_vien_ids" widget="many2many_tags" placeholder="Thêm các nhân sự vào dự án..."/>
+                                <field name="nhan_vien_ids" widget="many2many_tags"/>
                             </page>
-                            <page string="Nhiệm vụ dự án">
+                            <page string="Danh sách Task">
                                 <field name="nhiem_vu_ids">
                                     <tree>
                                         <field name="ten_nhiem_vu"/>
@@ -59,56 +71,25 @@
         </record>
 
         <record id="view_du_an_tree" model="ir.ui.view">
-            <field name="name">du_an_tree</field>
+            <field name="name">du_an.tree</field>
             <field name="model">du_an</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="ten_du_an"/>
                     <field name="giai_doan_game"/>
-                    <field name="ngan_sach"/>
-                    <field name="trang_thai"
-                           widget="badge"
-                           decoration-info="trang_thai == 'dang_thuc_hien'"
-                           decoration-success="trang_thai == 'hoan_thanh'"
-                           decoration-warning="trang_thai == 'tam_dung'"
-                           decoration-danger="trang_thai == 'huy_bo'"/>
-                    <field name="muc_uu_tien"
-                           widget="badge"
-                           decoration-muted="muc_uu_tien == 'thap'"
-                           decoration-primary="muc_uu_tien == 'trung_binh'"
-                           decoration-warning="muc_uu_tien == 'cao'"
-                           decoration-danger="muc_uu_tien == 'khan_cap'"/>
+                    <field name="muc_uu_tien"/>
                     <field name="ngay_bat_dau"/>
                     <field name="ngay_ket_thuc"/>
                     <field name="tien_do_du_an" widget="progressbar"/>
+                    <field name="trang_thai" widget="badge" decoration-success="trang_thai == 'hoan_thanh'" decoration-info="trang_thai == 'dang_thuc_hien'" decoration-warning="trang_thai == 'tam_dung'" decoration-danger="trang_thai == 'huy_bo'"/>
                 </tree>
             </field>
         </record>
 
-        <record id="du_an_search" model="ir.ui.view">
-            <field name="model">du_an</field>
-            <field name="arch" type="xml">
-                <search>
-                    <field name="ten_du_an"/>
-                    <field name="ngan_sach"/>
-                    <field name="giai_doan_game"/>
-                    <field name="trang_thai"/>
-                    <field name="muc_uu_tien"/>
-                    
-                    <group expand="0" string="Nhóm theo">
-                        <filter string="Giai đoạn phát triển" name="group_giai_doan" context="{'group_by':'giai_doan_game'}"/>
-                        <filter string="Trạng thái" name="group_trang_thai" context="{'group_by':'trang_thai'}"/>
-                        <filter string="Mức ưu tiên" name="group_uu_tien" context="{'group_by':'muc_uu_tien'}"/>
-                    </group>
-                </search>
-            </field>
-        </record>
-
         <record id="action_du_an" model="ir.actions.act_window">
-            <field name="name">Dự án Game</field>
+            <field name="name">Quản lý Dự án</field>
             <field name="res_model">du_an</field>
             <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="du_an_search"/>
         </record>
     </data>
 </odoo>

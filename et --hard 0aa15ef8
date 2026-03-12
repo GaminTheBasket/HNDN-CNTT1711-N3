@@ -1,0 +1,138 @@
+[33m0aa15ef8[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Cập nhập Thêm Giao diện và bổ sung tính năng
+[33mab430456[m Them 2 module QL_du_an va QL_congviec
+[33m26c4eb84[m .
+[33m2e77163b[m .
+[33md5f15d12[m .
+[33m59b5b6c4[m .
+[33m98aeb104[m .
+[33mc47fdab9[m .
+[33m11e43f82[m .
+[33m28ea76b1[m .
+[33mcfbc1bf0[m Update README.md
+[33m26e29006[m Update README.md
+[33mcc199090[m .
+[33m425d630b[m .
+[33mfb3f8842[m Update LICENSE
+[33m89e5b4d5[m .
+[33me16a8683[m .
+[33m557527f6[m .
+[33m5aeae948[m .
+[33mf17ffa4d[m .
+[33m54dfb596[m .
+[33mf9920ba4[m .
+[33mc336da62[m .
+[33mbfbe8658[m .
+[33me6ff5dde[m .
+[33mda2bc290[m .
+[33m2562e966[m .
+[33m0313322f[m .
+[33m8fe18169[m .
+[33m0f8fc9d7[m .
+[33md631190e[m .
+[33m85921f56[m .
+[33m7ec12384[m .
+[33mf3c148e3[m .
+[33mbda0e506[m .
+[33m8401069f[m .
+[33m15deea86[m .
+[33mdd0eb9b6[m .
+[33me974814f[m .
+[33m27ff1119[m .
+[33mbe2cab50[m .
+[33m99be2c04[m .
+[33m8b8877e3[m .
+[33m8cf2e997[m .
+[33m2e5ae33b[m .
+[33m08d75f8b[m .
+[33m3a874bbf[m .
+[33mf9ce750e[m .
+[33m98670892[m .
+[33mcaaaddd1[m .
+[33m6e894397[m .
+[33m149d6b4b[m .
+[33m93b0e898[m .
+[33m5799bdbd[m .
+[33m5a7b20af[m .
+[33m3342e1b0[m .
+[33ma2aac5ff[m .
+[33m3f02d046[m .
+[33ma5d0dfe9[m .
+[33m16ab1309[m .
+[33m0800798f[m .
+[33m7eb322c4[m .
+[33mb179b3ee[m .
+[33m40b17fea[m .
+[33m64ce372a[m .
+[33m96e9767c[m .
+[33m23d8373e[m .
+[33ma9803b45[m .
+[33m66e8ec58[m .
+[33m17f64b1c[m .
+[33m70f1969f[m ?
+[33m2992a363[m first
+[33m9e6d9f9b[m .
+[33m009f1076[m .
+[33me04df9ea[m ?
+[33m72294abb[m ?
+[33mb7b2af77[m ?
+[33mcf9cc424[m .
+[33m5c1e066d[m .
+[33m392da807[m ?
+[33m91c26f08[m ?
+[33medd870a9[m .
+[33m8078aa26[m Initial commit
+[33mb785aa3d[m Merge branch 'hieu-dev' into 'dev'
+[33mf623d028[m Merge branch 'dev' of https://gitlab.com/anhlta/fit_dnu_cssv into hieu-dev
+[33maff8465c[m log_sinh_vien_ca_hoc init
+[33m30cf631b[m ca_hoc update
+[33m0e1c1ecd[m ca_hoc delete ca_hoc_id
+[33md792225a[m update table ca_hoc
+[33m8970a008[m .
+[33m2fa156f1[m .
+[33m06b12b76[m .
+[33m2778851d[m .
+[33m671451b1[m .
+[33mdd08a355[m .
+[33mba2bdcb0[m .
+[33mce808470[m create ca_hoc
+[33m9718b435[m Merge branch 'product' of https://gitlab.com/anhlta/fit_dnu_cssv into hieu-dev
+[33m69d81fa7[m add
+[33m3dd5ed25[m .
+[33m2d27555f[m .
+[33m909661b9[m .
+[33m48dadf8e[m init student log action
+[33m4e2be6e3[m .
+[33mdb9da3b9[m Merge branch 'dev' of https://gitlab.com/anhlta/fit_dnu_cssv into product
+[33m83e5be9c[m .
+[33m3865eade[m Merge branch 'dev' of https://gitlab.com/anhlta/fit_dnu_cssv into product
+[33m8d5f2af6[m .
+[33m812ba4ff[m .
+[33m3e6d9f29[m Merge branch 'dev' of https://gitlab.com/anhlta/fit_dnu_cssv into product
+[33m1888a5e5[m .
+[33mb086df4a[m Merge branch 'dev' of https://gitlab.com/anhlta/fit_dnu_cssv into product
+[33mdc8c682c[m .
+[33m33641291[m .
+[33m9a6ad367[m Merge branch 'dev' of https://gitlab.com/anhlta/fit_dnu_cssv into product
+[33m5687de18[m .
+[33ma66ee18a[m .
+[33m02a1ddff[m .
+[33m24b404c0[m .
+[33me5092f1e[m .
+[33m3dd9adef[m .
+[33md408adc4[m .
+[33mcf55b2d5[m .
+[33m56d5a1fd[m .
+[33maaaf3a44[m .
+[33m8785ab64[m .
+[33md73000e0[m .
+[33m99120651[m .
+[33m84bd3d26[m .
+[33mb18a60ae[m .
+[33m02565c3b[m .
+[33mc18ee396[m .
+[33m58105656[m .
+[33m4b409e7d[m .
+[33m286ac509[m .
+[33m1ffa825d[m .
+[33mf278c212[m add subject
+[33m151f9ef2[m ?
