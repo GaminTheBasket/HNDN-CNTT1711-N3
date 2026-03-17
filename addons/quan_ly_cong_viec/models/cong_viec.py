@@ -145,3 +145,86 @@ class CongViec(models.Model):
                 record.tom_tat_ai = result['candidates'][0]['content']['parts'][0]['text']
             except Exception as e:
                 raise ValidationError(f"Lỗi khi xử lý dữ liệu AI: {str(e)}")
+
+    # =================================================================
+    # MỨC 3: GỌI EXTERNAL API (TELEGRAM BOT) TỰ ĐỘNG
+    # =================================================================
+    
+    # 1. Bắt sự kiện khi TẠO MỚI công việc
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super(CongViec, self).create(vals_list)
+        for record in records:
+            # Nếu tạo task mà có gắn tên nhân viên luôn thì báo giao việc
+            if record.nhan_vien_id:
+                record._send_telegram_notification_giao_viec()
+        return records
+
+    # 2. Bắt sự kiện khi SỬA công việc
+    def write(self, vals):
+        res = super(CongViec, self).write(vals)
+        for record in self:
+            # Nếu nhân viên vừa bấm hoàn thành task -> Báo tin vui
+            if vals.get('trang_thai') == 'hoan_thanh':
+                record._send_telegram_notification_hoan_thanh()
+            
+            # Nếu sếp vừa vào chỉnh sửa để giao việc cho nhân viên mới -> Báo giao việc
+            if 'nhan_vien_id' in vals and record.nhan_vien_id:
+                record._send_telegram_notification_giao_viec()
+                
+        return res
+
+    # 3. Hàm gửi tin nhắn: BÁO HOÀN THÀNH
+    def _send_telegram_notification_hoan_thanh(self):
+        bot_token = 'token_cua_ban'
+        chat_id = 'ID_cua_ban'
+        
+        ten_nv = self.nhan_vien_id.ho_va_ten if self.nhan_vien_id else 'Chưa phân công'
+        ten_da = self.du_an_id.ten_du_an if self.du_an_id else 'Không thuộc dự án nào'
+        
+        message = (
+            f"🚀 <b>[TIN VUI] HOÀN THÀNH CÔNG VIỆC!</b>\n\n"
+            f"👤 <b>Nhân viên:</b> {ten_nv}\n"
+            f"🎮 <b>Dự án:</b> {ten_da}\n"
+            f"✅ <b>Task:</b> {self.ten_cong_viec}\n"
+            f"⏰ <b>Lúc:</b> {fields.Datetime.now()}"
+        )
+        
+        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        payload = {'chat_id': chat_id, 'text': message, 'parse_mode': 'HTML'}
+        try:
+            response = requests.post(url, json=payload, timeout=5)
+            # In kết quả ra Terminal để xem bot Telegram báo gì
+            print("=== KẾT QUẢ GỬI TELEGRAM ===")
+            print(response.text)
+        except Exception as e:
+            print("=== LỖI KẾT NỐI MẠNG ===")
+            print(e)
+
+    # 4. Hàm gửi tin nhắn: BÁO GIAO VIỆC MỚI
+    def _send_telegram_notification_giao_viec(self):
+        bot_token = 'token_cua_ban'
+        chat_id = 'ID_cua_ban'
+        
+        ten_nv = self.nhan_vien_id.ho_va_ten if self.nhan_vien_id else 'Chưa phân công'
+        ten_da = self.du_an_id.ten_du_an if self.du_an_id else 'Không thuộc dự án nào'
+        
+        message = (
+            f"🎯 <b>[CÓ CÔNG VIỆC MỚI ĐƯỢC GIAO]</b>\n\n"
+            f"👤 <b>Người nhận:</b> {ten_nv}\n"
+            f"🎮 <b>Dự án:</b> {ten_da}\n"
+            f"📝 <b>Task:</b> {self.ten_cong_viec}\n"
+            f"⏳ <b>Deadline:</b> {self.han_hoan_thanh}\n"
+            f"🔥 <i>Vào Odoo check yêu cầu và chiến đấu ngay nhé!</i>"
+        )
+        
+        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        payload = {'chat_id': chat_id, 'text': message, 'parse_mode': 'HTML'}
+        try:
+            response = requests.post(url, json=payload, timeout=5)
+            # In kết quả ra Terminal để xem bot Telegram báo gì
+            print("=== KẾT QUẢ GỬI TELEGRAM ===")
+            print(response.text)
+        except Exception as e:
+            print("=== LỖI KẾT NỐI MẠNG ===")
+            print(e)
