@@ -2,6 +2,19 @@ from odoo import models, fields, api
 from datetime import date
 from odoo.exceptions import ValidationError
 
+# ==========================================
+# BẢNG DANH MỤC KỸ NĂNG (CHO THẺ TAGS)
+# ==========================================
+class KyNang(models.Model):
+    _name = 'ky_nang'
+    _description = 'Danh mục Kỹ năng'
+
+    name = fields.Char(string="Tên kỹ năng", required=True)
+    color = fields.Integer(string="Màu sắc") # Để Odoo tự đổi màu thẻ tag ngẫu nhiên
+
+# ==========================================
+# BẢNG NHÂN VIÊN
+# ==========================================
 class NhanVien(models.Model):
     _name = 'nhan_vien'
     _description = 'Bảng chứa thông tin nhân viên'
@@ -26,8 +39,7 @@ class NhanVien(models.Model):
     trang_thai_lam_viec = fields.Selection([
         ('thu_viec', 'Thử việc'),
         ('chinh_thuc', 'Chính thức'),
-        ('nghi_phep', 'Nghỉ phép'),
-        ('nghi_viec', 'Nghỉ việc')
+        ('da_nghi', 'Đã nghỉ')
     ], string="Trạng thái làm việc", default='thu_viec')
 
     vai_tro = fields.Selection([
@@ -44,7 +56,8 @@ class NhanVien(models.Model):
         ('design', 'Design Team')
     ], string="Phòng ban")
 
-    ky_nang = fields.Char(string="Kỹ năng (VD: Unity, Blender...)")
+    # ĐÃ NÂNG CẤP: Dùng Many2many để tạo Thẻ Tags
+    ky_nang_ids = fields.Many2many('ky_nang', string="Kỹ năng")
 
     # --- LIÊN KẾT MODULE KHÁC ---
     lich_su_cong_tac_ids = fields.One2many(
@@ -57,10 +70,6 @@ class NhanVien(models.Model):
         inverse_name="nhan_vien_id", 
         string="Danh sách chứng chỉ bằng cấp"
     )
-
-    # LƯU Ý: Tạm ẩn 2 trường này để tránh lỗi 500 khi chưa cài module khác
-    # cong_viec_ids = fields.One2many("quan.ly.cong.viec", "nhan_vien_id", string="Công việc đang làm")
-    # tai_san_ids = fields.One2many("quan.ly.tai.san", "nhan_vien_id", string="Tài sản đang giữ")
 
     _sql_constraints = [
         ('ma_dinh_danh_unique', 'unique(ma_dinh_danh)', 'Mã định danh phải là duy nhất')
@@ -79,19 +88,13 @@ class NhanVien(models.Model):
     def _default_ma_dinh_danh(self):
         for record in self:
             if record.ho_ten_dem and record.ten:
-                # 1. Tạo mã gốc
                 chu_cai_dau = ''.join([tu[0][0] for tu in record.ho_ten_dem.lower().split() if tu])
                 ma_goc = record.ten.lower() + chu_cai_dau
-                
-                # 2. Thuật toán dò trùng và nhảy số (Ví dụ: testh -> testh1 -> testh2)
                 ma_moi = ma_goc
                 so_dem = 1
-                
                 while self.env['nhan_vien'].search([('ma_dinh_danh', '=', ma_moi)]):
                     ma_moi = f"{ma_goc}{so_dem}"
                     so_dem += 1
-                
-                # 3. Gán mã không trùng
                 record.ma_dinh_danh = ma_moi
 
     @api.depends("ngay_sinh")

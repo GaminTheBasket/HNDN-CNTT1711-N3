@@ -1,6 +1,6 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from datetime import date, datetime
+from datetime import date
 import requests
 import json
 
@@ -24,58 +24,113 @@ class CongViec(models.Model):
         ('moi', 'Mới'),
         ('dang_thuc_hien', 'Đang thực hiện'),
         ('dang_cho', 'Đang chờ'),
-        ('tam_hoan', 'Tạm hoãn'),
         ('hoan_thanh', 'Hoàn thành'),
-        ('da_huy', 'Đã hủy'),
-        ('qua_han', 'Quá hạn'),
-        ('da_duyet', 'Đã duyệt'),
-        ('can_sua_doi', 'Cần sửa đổi'),
+        ('da_huy', 'Đã hủy')
     ], string="Trạng thái", default="moi")
 
     ngay_bat_dau = fields.Date("Ngày bắt đầu", required=True)
     han_hoan_thanh = fields.Date("Hạn hoàn thành", required=True)
-    
-    # ĐÃ CẬP NHẬT: Bỏ required=True để việc tạo task dễ thở hơn
-    ngay_ket_thuc = fields.Date("Ngày kết thúc")
+    ngay_ket_thuc = fields.Date("Ngày kết thúc") 
 
-    # Giữ nguyên kiểu nhập tay linh hoạt của bạn, không dùng compute cứng nhắc
-    tien_do = fields.Float("Tiến độ %", default=0.0)
+    tien_do = fields.Float("Tiến độ %", compute="_compute_tien_do", store=True)
+    canh_bao_han = fields.Char("Tình trạng Deadline", compute="_compute_canh_bao_han")
 
-    mo_ta = fields.Text("Mô tả công việc (Dán yêu cầu dài vào đây)")
+    mo_ta = fields.Text("Mô tả công việc")
     tom_tat_ai = fields.Text("Tóm tắt từ AI (Gemini)")
 
-    # --- CÁC BIẾN CHO ĐỒNG HỒ NGẦM (CHỐNG GIAN LẬN) ---
-    thoi_gian_bat_dau_chay = fields.Datetime("Bắt đầu đếm giờ lúc", readonly=True, copy=False)
-    tong_thoi_gian_luy_ke = fields.Float("Tổng giờ làm (Hệ thống tính)", default=0.0, readonly=True, copy=False)
-
+    # Liên kết với bảng Công việc con
     cong_viec_con_ids = fields.One2many("cong_viec_con", inverse_name="cong_viec_id", string="Công việc con")
+    
     ghi_nhan_thoi_gian_ids = fields.One2many("ghi_nhan_thoi_gian", inverse_name="cong_viec_id", string="Ghi nhận thời gian")
     danh_gia_cong_viec_ids = fields.One2many("danh_gia_cong_viec", inverse_name="cong_viec_id", string="Đánh giá công việc")
 
     # =========================================================
-    # TÍNH NĂNG MỚI: LỌC NHÂN VIÊN THEO DỰ ÁN (DYNAMIC DOMAIN)
+    # LỌC NHÂN VIÊN THEO DỰ ÁN
     # =========================================================
     @api.onchange('du_an_id')
     def _loc_nhan_vien_theo_du_an(self):
         if self.du_an_id:
-            # Xóa nhân viên nếu họ không thuộc dự án mới chọn
             if self.nhan_vien_id and self.nhan_vien_id not in self.du_an_id.nhan_vien_ids:
                 self.nhan_vien_id = False
-            
-            # Chỉ hiển thị nhân viên thuộc dự án này
             return {'domain': {'nhan_vien_id': [('id', 'in', self.du_an_id.nhan_vien_ids.ids)]}}
         else:
             return {'domain': {'nhan_vien_id': []}}
 
+    # =========================================================
+    # TÍNH % TIẾN ĐỘ & TỰ ĐỘNG CHUYỂN TRẠNG THÁI TASK CHA
+    # =========================================================
+    @api.depends('cong_viec_con_ids.trang_thai', 'trang_thai')
+    def _compute_tien_do(self):
+        for record in self:
+            tong_so_viec_con = len(record.cong_viec_con_ids)
+            
+            if tong_so_viec_con > 0:
+                viec_da_xong = len(record.cong_viec_con_ids.filtered(lambda x: x.trang_thai == 'hoan_thanh'))
+                record.tien_do = (viec_da_xong / tong_so_viec_con) * 100.0
+                
+                # --- LOGIC LIÊN KẾT TRẠNG THÁI CHA & CON TỰ ĐỘNG ---
+                
+                # 1. Nếu việc con xong 100% -> Cha tự động Hoàn thành
+                if record.tien_do == 100.0 and record.trang_thai != 'hoan_thanh':
+                    record.trang_thai = 'hoan_thanh'
+                    
+                # 2. Nếu có task con Đang làm HOẶC tiến độ > 0% -> Cha tự động sang Đang thực hiện
+                elif (record.tien_do > 0 or any(c.trang_thai == 'dang_thuc_hien' for c in record.cong_viec_con_ids)):
+                    if record.trang_thai == 'moi':
+                        record.trang_thai = 'dang_thuc_hien'
+            else:
+                if record.trang_thai == 'hoan_thanh':
+                    record.tien_do = 100.0
+                else:
+                    record.tien_do = 0.0
+
+    # =========================================================
+    # CẢNH BÁO QUÁ HẠN DEADLINE ĐẾM NGƯỢC
+    # =========================================================
+    @api.depends('han_hoan_thanh', 'trang_thai')
+    def _compute_canh_bao_han(self):
+        today = date.today()
+        for record in self:
+            if record.trang_thai == 'hoan_thanh':
+                record.canh_bao_han = "✅ Đã xong kịp tiến độ"
+            elif record.han_hoan_thanh and record.han_hoan_thanh < today:
+                record.canh_bao_han = "🚨 QUÁ HẠN DEADLINE!"
+            else:
+                record.canh_bao_han = "⏳ Đang trong hạn"
+
+    # =========================================================
+    # CẢNH BÁO TRÙNG LỊCH (SMART WARNING)
+    # =========================================================
+    @api.onchange('nhan_vien_id', 'ngay_bat_dau', 'han_hoan_thanh')
+    def _check_trung_lich_nhan_vien(self):
+        if self.nhan_vien_id and self.ngay_bat_dau and self.han_hoan_thanh:
+            domain = [
+                ('nhan_vien_id', '=', self.nhan_vien_id.id),
+                ('id', '!=', self._origin.id if self._origin else False),
+                ('trang_thai', 'not in', ['hoan_thanh', 'da_huy', 'tam_hoan']),
+                ('ngay_bat_dau', '<=', self.han_hoan_thanh),
+                ('han_hoan_thanh', '>=', self.ngay_bat_dau)
+            ]
+            cac_task_trung = self.env['cong_viec'].search(domain)
+            
+            if cac_task_trung:
+                danh_sach_ten_task = "\n- ".join(cac_task_trung.mapped('ten_cong_viec'))
+                return {
+                    'warning': {
+                        'title': '⚠️ LƯU Ý: Nhân sự đang bận rộn!',
+                        'message': f'Nhân viên {self.nhan_vien_id.ho_va_ten} đang có các task khác:\n{danh_sach_ten_task}\n\nBạn có chắc chắn muốn ép thêm việc không?'
+                    }
+                }
+
     # =================================================================
-    # MỨC 3: TÍCH HỢP AI GEMINI TÓM TẮT YÊU CẦU CÔNG VIỆC
+    # TÍCH HỢP AI TÓM TẮT YÊU CẦU
     # =================================================================
     def action_tom_tat_ai(self):
         for record in self:
             if not record.mo_ta:
                 raise ValidationError("Bạn phải nhập 'Mô tả công việc' thì AI mới có cái để đọc và tóm tắt chứ!")
             
-            api_key = 'AIzaSyB_xzZ3EkaMuOt9g99N14yQsE2XqNKbQ0s' 
+            api_key = 'KEY_API_CUA_BAN' 
             url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}'
             headers = {'Content-Type': 'application/json'}
             
@@ -85,85 +140,8 @@ class CongViec(models.Model):
             try:
                 response = requests.post(url, headers=headers, json=data)
                 if response.status_code != 200:
-                    chi_tiet_loi = response.json()
-                    loi_hien_thi = json.dumps(chi_tiet_loi, indent=2, ensure_ascii=False)
-                    raise ValidationError(f"Google AI từ chối phục vụ! Chi tiết:\n{loi_hien_thi}")
-
+                    raise ValidationError(f"Google AI từ chối phục vụ! Chi tiết:\n{json.dumps(response.json(), indent=2, ensure_ascii=False)}")
                 result = response.json()
-                text_ai = result['candidates'][0]['content']['parts'][0]['text']
-                record.tom_tat_ai = text_ai
-                
-            except requests.exceptions.RequestException as e:
-                raise ValidationError(f"Lỗi mạng khi gọi điện cho Google: {str(e)}")
+                record.tom_tat_ai = result['candidates'][0]['content']['parts'][0]['text']
             except Exception as e:
-                if isinstance(e, ValidationError):
-                    raise e
                 raise ValidationError(f"Lỗi khi xử lý dữ liệu AI: {str(e)}")
-
-    # =================================================================
-    # MỨC 2: CẢNH BÁO TRÙNG LỊCH THÔNG MINH (GIỮ NGUYÊN BẢN GỐC XỊN)
-    # =================================================================
-    @api.onchange('nhan_vien_id', 'ngay_bat_dau', 'ngay_ket_thuc')
-    def _check_trung_lich_nhan_vien(self):
-        if self.nhan_vien_id and self.ngay_bat_dau and self.ngay_ket_thuc:
-            domain = [
-                ('nhan_vien_id', '=', self.nhan_vien_id.id),
-                ('id', '!=', self._origin.id if self._origin else False),
-                ('trang_thai', 'not in', ['hoan_thanh', 'da_huy', 'tam_hoan']),
-                ('ngay_bat_dau', '<=', self.ngay_ket_thuc),
-                ('ngay_ket_thuc', '>=', self.ngay_bat_dau)
-            ]
-            cac_task_trung = self.env['cong_viec'].search(domain)
-            
-            if cac_task_trung:
-                danh_sach_ten_task = "\n- ".join(cac_task_trung.mapped('ten_cong_viec'))
-                return {
-                    'warning': {
-                        'title': '⚠️ LƯU Ý: Nhân sự đang bận rộn!',
-                        'message': f'Nhân viên {self.nhan_vien_id.ho_va_ten} đang có các task khác trong khoảng thời gian này:\n{danh_sach_ten_task}\n\nBạn có chắc chắn muốn ép thêm việc không?'
-                    }
-                }
-
-    # =================================================================
-    # MỨC 2: TỰ ĐỘNG HÓA CHẠY ĐỒNG HỒ NGẦM & TẠO ĐÁNH GIÁ
-    # =================================================================
-    def write(self, vals):
-        # 1. Logic Đồng hồ ngầm khi đổi trạng thái làm việc
-        if 'trang_thai' in vals:
-            trang_thai_moi = vals['trang_thai']
-            for record in self:
-                trang_thai_cu = record.trang_thai
-                
-                if trang_thai_moi == 'dang_thuc_hien' and trang_thai_cu != 'dang_thuc_hien':
-                    vals['thoi_gian_bat_dau_chay'] = fields.Datetime.now()
-                
-                elif trang_thai_cu == 'dang_thuc_hien' and trang_thai_moi != 'dang_thuc_hien':
-                    if record.thoi_gian_bat_dau_chay:
-                        thoi_gian_dung = fields.Datetime.now()
-                        so_giay_da_lam = (thoi_gian_dung - record.thoi_gian_bat_dau_chay).total_seconds()
-                        so_gio = so_giay_da_lam / 3600.0
-                        vals['tong_thoi_gian_luy_ke'] = record.tong_thoi_gian_luy_ke + so_gio
-                        vals['thoi_gian_bat_dau_chay'] = False
-
-        res = super().write(vals)
-
-        # 2. Logic tự động chốt timesheet và đánh giá khi "Hoàn thành"
-        if vals.get('trang_thai') == 'hoan_thanh':
-            today = date.today()
-            for record in self:
-                gio_thuc_te = record.tong_thoi_gian_luy_ke
-                if not record.ghi_nhan_thoi_gian_ids.filtered(lambda g: g.ngay_ghi_nhan == today):
-                    self.env['ghi_nhan_thoi_gian'].create({
-                        'cong_viec_id': record.id,
-                        'nhan_vien_id': record.nhan_vien_id.id if record.nhan_vien_id else False,
-                        'so_gio_lam_viec': gio_thuc_te,
-                        'ngay_ghi_nhan': today,
-                    })
-                if not record.danh_gia_cong_viec_ids:
-                    self.env['danh_gia_cong_viec'].create({
-                        'cong_viec_id': record.id,
-                        'nhan_vien_id': record.nhan_vien_id.id if record.nhan_vien_id else False,
-                        'kpi': 0.0,
-                        'nhan_xet': f'Hệ thống tự động chốt: Task hoàn thành trong {round(gio_thuc_te, 2)} giờ.',
-                    })
-        return res

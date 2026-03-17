@@ -34,7 +34,7 @@
                             <group string="Thông tin công tác">
                                 <field name="vai_tro"/>
                                 <field name="phong_ban"/>
-                                <field name="ky_nang" placeholder="VD: Unity, Blender, C#..."/>
+                                <field name="ky_nang_ids" widget="many2many_tags" options="{'color_field': 'color'}" placeholder="Chọn hoặc gõ để tạo kỹ năng mới..."/>
                             </group>
                         </group>
                         <notebook>
@@ -61,7 +61,7 @@
                     <field name="ho_va_ten"/>
                     <field name="phong_ban"/>
                     <field name="vai_tro"/>
-                    <field name="ky_nang"/>
+                    <field name="ky_nang_ids" widget="many2many_tags" options="{'color_field': 'color'}"/>
                     <field name="trang_thai_lam_viec" widget="badge" decoration-success="trang_thai_lam_viec == 'chinh_thuc'"/>
                 </tree>
             </field>
@@ -76,7 +76,7 @@
                     <field name="ho_va_ten"/>
                     <field name="phong_ban"/>
                     <field name="vai_tro"/>
-                    <field name="ky_nang"/>
+                    <field name="ky_nang_ids"/>
                     <separator/>
                     <filter string="Chính thức" name="chinh_thuc" domain="[('trang_thai_lam_viec', '=', 'chinh_thuc')]"/>
                     <filter string="Thử việc" name="thu_viec" domain="[('trang_thai_lam_viec', '=', 'thu_viec')]"/>

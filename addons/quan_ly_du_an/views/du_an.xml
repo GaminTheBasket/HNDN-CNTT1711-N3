@@ -13,11 +13,11 @@
                     
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="action_mo_danh_sach_nhiem_vu" type="object" class="oe_stat_button" icon="fa-tasks">
-                                <field name="tong_so_nhiem_vu" widget="statinfo" string="Tổng số Task"/>
+                            <button name="action_mo_danh_sach_cong_viec" type="object" class="oe_stat_button" icon="fa-tasks">
+                                <field name="tong_so_cong_viec" widget="statinfo" string="Tổng số Task"/>
                             </button>
-                            <button name="action_mo_danh_sach_nhiem_vu" type="object" class="oe_stat_button" icon="fa-check-square-o">
-                                <field name="tong_nhiem_vu_hoan_thanh" widget="statinfo" string="Đã Hoàn Thành"/>
+                            <button name="action_mo_danh_sach_cong_viec" type="object" class="oe_stat_button" icon="fa-check-square-o">
+                                <field name="tong_cong_viec_hoan_thanh" widget="statinfo" string="Đã Hoàn Thành"/>
                             </button>
                             <button class="oe_stat_button" icon="fa-users" style="pointer-events: none;">
                                 <field name="so_luong_nhan_vien" widget="statinfo" string="Nhân Sự"/>
@@ -50,16 +50,6 @@
                             </page>
                             <page string="Nhân sự tham gia">
                                 <field name="nhan_vien_ids" widget="many2many_tags"/>
-                            </page>
-                            <page string="Danh sách Task">
-                                <field name="nhiem_vu_ids">
-                                    <tree>
-                                        <field name="ten_nhiem_vu"/>
-                                        <field name="trang_thai"/>
-                                        <field name="muc_uu_tien"/>
-                                        <field name="han_chot"/>
-                                    </tree>
-                                </field>
                             </page>
                             <page string="Lịch sử Tiến độ">
                                 <field name="tien_do_ids"/>

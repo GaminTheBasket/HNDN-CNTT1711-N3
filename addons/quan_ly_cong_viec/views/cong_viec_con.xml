@@ -14,7 +14,6 @@
                             <field name="ten_cong_viec_con"/>
                             <field name="trang_thai"/>
                             <field name="han_hoan_thanh"/>
-                            <field name="tien_do"/>
                             <field name="mo_ta"/>
                         </group>
                     </sheet>
@@ -30,9 +29,8 @@
                     <field name="cong_viec_id"/>
                     <field name="nhan_vien_id"/>
                     <field name="ten_cong_viec_con"/>
-                    <field name="trang_thai"/>
+                    <field name="trang_thai" widget="badge" decoration-success="trang_thai == 'hoan_thanh'" decoration-info="trang_thai == 'moi'"/>
                     <field name="han_hoan_thanh"/>
-                    <field name="tien_do"/>
                     <field name="mo_ta"/>
                 </tree>
             </field>
@@ -47,19 +45,16 @@
                     <field name="ten_cong_viec_con"/>
                     <field name="trang_thai"/>
                     <field name="han_hoan_thanh"/>
-                    <field name="tien_do"/>
                     <field name="mo_ta"/>
                 </search>
             </field>
         </record>
 
         <record id="action_cong_viec_con" model="ir.actions.act_window">
-            <field name="name">công việc con</field>
+            <field name="name">Công việc con</field>
             <field name="res_model">cong_viec_con</field>
             <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref = "cong_viec_con_search"/>
+            <field name="search_view_id" ref="cong_viec_con_search"/>
         </record>
     </data>
 </odoo>
-        
-    
