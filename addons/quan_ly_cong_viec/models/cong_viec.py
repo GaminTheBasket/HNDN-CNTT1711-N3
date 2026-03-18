@@ -179,8 +179,8 @@ class CongViec(models.Model):
         return res
 
     def _send_telegram_notification_hoan_thanh(self):
-        bot_token = '8700129057:AAFhFV5ctulPaMEMqANdO6HiKQALvFat3K4'
-        chat_id = '-1003437564419'
+        bot_token = 'TOKEN_CUA_BAN'
+        chat_id = 'CHAT_ID_CUA_BAN'
         ten_nv = self.nhan_vien_id.ho_va_ten if self.nhan_vien_id else 'Chưa phân công'
         ten_da = self.du_an_id.ten_du_an if self.du_an_id else 'Không thuộc dự án nào'
         message = (
@@ -198,8 +198,8 @@ class CongViec(models.Model):
             pass
 
     def _send_telegram_notification_giao_viec(self):
-        bot_token = '8700129057:AAFhFV5ctulPaMEMqANdO6HiKQALvFat3K4'
-        chat_id = '-1003437564419'
+        bot_token = 'TOKEN_CUA_BAN'
+        chat_id = 'CHAT_ID_CUA_BAN'
         ten_nv = self.nhan_vien_id.ho_va_ten if self.nhan_vien_id else 'Chưa phân công'
         ten_da = self.du_an_id.ten_du_an if self.du_an_id else 'Không thuộc dự án nào'
         message = (
