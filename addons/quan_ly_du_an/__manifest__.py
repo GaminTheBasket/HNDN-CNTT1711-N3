@@ -27,13 +27,14 @@
     'data': [
         'security/ir.model.access.csv',
         'views/du_an.xml',
-        'views/nhiem_vu.xml',
-        'views/thoi_gian_lam_viec.xml',
-        'views/tien_do.xml',
         'views/dashboard.xml',
         'views/menu.xml',
-        'views/tre_han.xml',
-        'views/rui_ro.xml',
+        # Ẩn các view cũ để tránh xung đột giao diện
+        # 'views/nhiem_vu.xml',
+        # 'views/thoi_gian_lam_viec.xml',
+        # 'views/tien_do.xml',
+        # 'views/tre_han.xml',
+        # 'views/rui_ro.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

@@ -20,8 +20,9 @@ class DuAn(models.Model):
         ('release', 'Phát hành (Release)')
     ], string="Giai đoạn phát triển", default='concept')
 
-    # Bảng phụ
-    tien_do_ids = fields.One2many("tien_do", "du_an_id", string="Tiến Độ Dự Án")
+    # Đã tắt cái liên kết tới bảng tiến độ cũ ở đây
+    # tien_do_ids = fields.One2many("tien_do", "du_an_id", string="Tiến Độ Dự Án")
+    
     nhan_vien_ids = fields.Many2many('nhan_vien', 'du_an_nhan_vien_rel', 'du_an_id', 'nhan_vien_id', string="Nhân sự tham gia")
 
     muc_uu_tien = fields.Selection([
@@ -31,7 +32,6 @@ class DuAn(models.Model):
         ('khan_cap', 'Khẩn cấp')
     ], string="Mức ưu tiên", default="thap")
 
-    # Bỏ store=True để mỗi lần mở trang web nó tự đếm lại dữ liệu mới nhất
     trang_thai = fields.Selection([
         ('dang_thuc_hien', 'Đang thực hiện'),
         ('hoan_thanh', 'Hoàn thành'),
@@ -40,18 +40,15 @@ class DuAn(models.Model):
     ], string="Trạng thái", default="dang_thuc_hien", compute="_compute_trang_thai")
 
     so_luong_nhan_vien = fields.Integer("Số người phụ trách", compute="_tinh_so_luong_nhan_vien")
+    
+    # --- THỐNG KÊ SMART BUTTON ---
     tien_do_du_an = fields.Float(string="Tiến Độ Dự Án (%)", compute="_compute_thong_ke_task")
-
-    # --- CHỈNH SỬA: ĐẾM CHÍNH XÁC BẢNG cong_viec ---
     tong_so_cong_viec = fields.Integer(string="Tổng số Task", compute="_compute_thong_ke_task")
     tong_cong_viec_hoan_thanh = fields.Integer(string="Task Hoàn thành", compute="_compute_thong_ke_task")
+    tong_gio_lam_du_an = fields.Float(string="Tổng Giờ Làm (Toàn Dự án)", compute="_compute_thong_ke_task")
 
-    # ==========================================
-    # CÁC HÀM XỬ LÝ LOGIC (DÙNG SEARCH ĐỂ LÁCH LỖI)
-    # ==========================================
     def _compute_trang_thai(self):
         for record in self:
-            # Quét tìm trực tiếp các task thuộc về dự án này
             tasks = self.env['cong_viec'].search([('du_an_id', '=', record.id)])
             if not tasks:
                 record.trang_thai = "dang_thuc_hien"
@@ -73,13 +70,13 @@ class DuAn(models.Model):
 
     def _compute_thong_ke_task(self):
         for record in self:
-            # Quét tìm trực tiếp các task thuộc về dự án này để đếm
             tasks = self.env['cong_viec'].search([('du_an_id', '=', record.id)])
             so_luong = len(tasks)
             hoan_thanh = len(tasks.filtered(lambda c: c.trang_thai == 'hoan_thanh'))
             
             record.tong_so_cong_viec = so_luong
             record.tong_cong_viec_hoan_thanh = hoan_thanh
+            record.tong_gio_lam_du_an = sum(tasks.mapped('tong_gio_lam_thuc_te'))
             
             if so_luong > 0:
                 record.tien_do_du_an = (hoan_thanh / so_luong) * 100.0
@@ -123,7 +120,6 @@ class DuAn(models.Model):
         data = self.read_group([], ['muc_uu_tien'], ['muc_uu_tien'])
         return json.dumps(data)
 
-    # Đổi hàm hành động trả về CÔNG VIỆC
     def action_mo_danh_sach_cong_viec(self):
         self.ensure_one()
         return {

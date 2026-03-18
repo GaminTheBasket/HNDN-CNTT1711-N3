@@ -4,6 +4,42 @@ from datetime import date
 import requests
 import json
 
+# =========================================================
+# CÁC BẢNG PHỤ
+# =========================================================
+class CongViecCon(models.Model):
+    _name = 'cong_viec_con'
+    _description = 'Công việc con'
+    
+    ten_cong_viec_con = fields.Char("Tên việc con", required=True)
+    cong_viec_id = fields.Many2one('cong_viec', ondelete='cascade')
+    nhan_vien_id = fields.Many2one('nhan_vien', string="Người làm")
+    han_hoan_thanh = fields.Date("Hạn hoàn thành")
+    trang_thai = fields.Selection([('moi', 'Mới'), ('dang_thuc_hien', 'Đang làm'), ('hoan_thanh', 'Hoàn thành')], default='moi')
+
+class GhiNhanThoiGian(models.Model):
+    _name = 'ghi_nhan_thoi_gian'
+    _description = 'Chi tiết thời gian làm việc'
+    
+    cong_viec_id = fields.Many2one('cong_viec', string="Công việc", ondelete='cascade')
+    nhan_vien_id = fields.Many2one('nhan_vien', string="Nhân viên")
+    ngay_ghi_nhan = fields.Date("Ngày làm", default=fields.Date.context_today)
+    mo_ta = fields.Char("Nội dung đã làm", required=True)
+    thoi_gian_lam = fields.Float("Số giờ làm (h)", required=True)
+
+class DanhGiaCongViec(models.Model):
+    _name = 'danh_gia_cong_viec'
+    _description = 'Đánh giá kết quả công việc'
+    
+    cong_viec_id = fields.Many2one('cong_viec', string="Công việc", ondelete='cascade')
+    nguoi_danh_gia_id = fields.Many2one('nhan_vien', string="Quản lý đánh giá")
+    ngay_danh_gia = fields.Date("Ngày đánh giá", default=fields.Date.context_today)
+    # Bỏ điểm số trẻ con, tập trung vào nhận xét chuyên môn
+    nhan_xet = fields.Text("Nhận xét chi tiết của quản lý", required=True)
+
+# =========================================================
+# BẢNG CHÍNH: CÔNG VIỆC
+# =========================================================
 class CongViec(models.Model):
     _name = 'cong_viec'
     _description = 'Quản lý Công Việc'
@@ -38,15 +74,17 @@ class CongViec(models.Model):
     mo_ta = fields.Text("Mô tả công việc")
     tom_tat_ai = fields.Text("Tóm tắt từ AI (Gemini)")
 
-    # Liên kết với bảng Công việc con
     cong_viec_con_ids = fields.One2many("cong_viec_con", inverse_name="cong_viec_id", string="Công việc con")
-    
     ghi_nhan_thoi_gian_ids = fields.One2many("ghi_nhan_thoi_gian", inverse_name="cong_viec_id", string="Ghi nhận thời gian")
     danh_gia_cong_viec_ids = fields.One2many("danh_gia_cong_viec", inverse_name="cong_viec_id", string="Đánh giá công việc")
 
-    # =========================================================
-    # LỌC NHÂN VIÊN THEO DỰ ÁN
-    # =========================================================
+    tong_gio_lam_thuc_te = fields.Float("Tổng giờ làm thực tế", compute="_compute_tong_gio_lam", store=True)
+
+    @api.depends('ghi_nhan_thoi_gian_ids.thoi_gian_lam')
+    def _compute_tong_gio_lam(self):
+        for record in self:
+            record.tong_gio_lam_thuc_te = sum(record.ghi_nhan_thoi_gian_ids.mapped('thoi_gian_lam'))
+
     @api.onchange('du_an_id')
     def _loc_nhan_vien_theo_du_an(self):
         if self.du_an_id:
@@ -56,25 +94,15 @@ class CongViec(models.Model):
         else:
             return {'domain': {'nhan_vien_id': []}}
 
-    # =========================================================
-    # TÍNH % TIẾN ĐỘ & TỰ ĐỘNG CHUYỂN TRẠNG THÁI TASK CHA
-    # =========================================================
     @api.depends('cong_viec_con_ids.trang_thai', 'trang_thai')
     def _compute_tien_do(self):
         for record in self:
             tong_so_viec_con = len(record.cong_viec_con_ids)
-            
             if tong_so_viec_con > 0:
                 viec_da_xong = len(record.cong_viec_con_ids.filtered(lambda x: x.trang_thai == 'hoan_thanh'))
                 record.tien_do = (viec_da_xong / tong_so_viec_con) * 100.0
-                
-                # --- LOGIC LIÊN KẾT TRẠNG THÁI CHA & CON TỰ ĐỘNG ---
-                
-                # 1. Nếu việc con xong 100% -> Cha tự động Hoàn thành
                 if record.tien_do == 100.0 and record.trang_thai != 'hoan_thanh':
                     record.trang_thai = 'hoan_thanh'
-                    
-                # 2. Nếu có task con Đang làm HOẶC tiến độ > 0% -> Cha tự động sang Đang thực hiện
                 elif (record.tien_do > 0 or any(c.trang_thai == 'dang_thuc_hien' for c in record.cong_viec_con_ids)):
                     if record.trang_thai == 'moi':
                         record.trang_thai = 'dang_thuc_hien'
@@ -84,9 +112,6 @@ class CongViec(models.Model):
                 else:
                     record.tien_do = 0.0
 
-    # =========================================================
-    # CẢNH BÁO QUÁ HẠN DEADLINE ĐẾM NGƯỢC
-    # =========================================================
     @api.depends('han_hoan_thanh', 'trang_thai')
     def _compute_canh_bao_han(self):
         today = date.today()
@@ -98,9 +123,6 @@ class CongViec(models.Model):
             else:
                 record.canh_bao_han = "⏳ Đang trong hạn"
 
-    # =========================================================
-    # CẢNH BÁO TRÙNG LỊCH (SMART WARNING)
-    # =========================================================
     @api.onchange('nhan_vien_id', 'ngay_bat_dau', 'han_hoan_thanh')
     def _check_trung_lich_nhan_vien(self):
         if self.nhan_vien_id and self.ngay_bat_dau and self.han_hoan_thanh:
@@ -112,7 +134,6 @@ class CongViec(models.Model):
                 ('han_hoan_thanh', '>=', self.ngay_bat_dau)
             ]
             cac_task_trung = self.env['cong_viec'].search(domain)
-            
             if cac_task_trung:
                 danh_sach_ten_task = "\n- ".join(cac_task_trung.mapped('ten_cong_viec'))
                 return {
@@ -122,21 +143,15 @@ class CongViec(models.Model):
                     }
                 }
 
-    # =================================================================
-    # TÍCH HỢP AI TÓM TẮT YÊU CẦU
-    # =================================================================
     def action_tom_tat_ai(self):
         for record in self:
             if not record.mo_ta:
                 raise ValidationError("Bạn phải nhập 'Mô tả công việc' thì AI mới có cái để đọc và tóm tắt chứ!")
-            
             api_key = 'KEY_API_CUA_BAN' 
             url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}'
             headers = {'Content-Type': 'application/json'}
-            
             prompt = f"Bạn là một trợ lý quản lý dự án xuất sắc. Hãy đọc kỹ đoạn mô tả công việc sau và tóm tắt nó lại thành các gạch đầu dòng ngắn gọn, súc tích, dễ hiểu nhất cho lập trình viên:\n\n{record.mo_ta}"
             data = {"contents": [{"parts": [{"text": prompt}]}]}
-            
             try:
                 response = requests.post(url, headers=headers, json=data)
                 if response.status_code != 200:
@@ -146,42 +161,28 @@ class CongViec(models.Model):
             except Exception as e:
                 raise ValidationError(f"Lỗi khi xử lý dữ liệu AI: {str(e)}")
 
-    # =================================================================
-    # MỨC 3: GỌI EXTERNAL API (TELEGRAM BOT) TỰ ĐỘNG
-    # =================================================================
-    
-    # 1. Bắt sự kiện khi TẠO MỚI công việc
     @api.model_create_multi
     def create(self, vals_list):
         records = super(CongViec, self).create(vals_list)
         for record in records:
-            # Nếu tạo task mà có gắn tên nhân viên luôn thì báo giao việc
             if record.nhan_vien_id:
                 record._send_telegram_notification_giao_viec()
         return records
 
-    # 2. Bắt sự kiện khi SỬA công việc
     def write(self, vals):
         res = super(CongViec, self).write(vals)
         for record in self:
-            # Nếu nhân viên vừa bấm hoàn thành task -> Báo tin vui
             if vals.get('trang_thai') == 'hoan_thanh':
                 record._send_telegram_notification_hoan_thanh()
-            
-            # Nếu sếp vừa vào chỉnh sửa để giao việc cho nhân viên mới -> Báo giao việc
             if 'nhan_vien_id' in vals and record.nhan_vien_id:
                 record._send_telegram_notification_giao_viec()
-                
         return res
 
-    # 3. Hàm gửi tin nhắn: BÁO HOÀN THÀNH
     def _send_telegram_notification_hoan_thanh(self):
-        bot_token = 'token_cua_ban'
-        chat_id = 'ID_cua_ban'
-        
+        bot_token = '8700129057:AAFhFV5ctulPaMEMqANdO6HiKQALvFat3K4'
+        chat_id = '-1003437564419'
         ten_nv = self.nhan_vien_id.ho_va_ten if self.nhan_vien_id else 'Chưa phân công'
         ten_da = self.du_an_id.ten_du_an if self.du_an_id else 'Không thuộc dự án nào'
-        
         message = (
             f"🚀 <b>[TIN VUI] HOÀN THÀNH CÔNG VIỆC!</b>\n\n"
             f"👤 <b>Nhân viên:</b> {ten_nv}\n"
@@ -189,26 +190,18 @@ class CongViec(models.Model):
             f"✅ <b>Task:</b> {self.ten_cong_viec}\n"
             f"⏰ <b>Lúc:</b> {fields.Datetime.now()}"
         )
-        
         url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
         payload = {'chat_id': chat_id, 'text': message, 'parse_mode': 'HTML'}
         try:
-            response = requests.post(url, json=payload, timeout=5)
-            # In kết quả ra Terminal để xem bot Telegram báo gì
-            print("=== KẾT QUẢ GỬI TELEGRAM ===")
-            print(response.text)
-        except Exception as e:
-            print("=== LỖI KẾT NỐI MẠNG ===")
-            print(e)
+            requests.post(url, json=payload, timeout=5)
+        except Exception:
+            pass
 
-    # 4. Hàm gửi tin nhắn: BÁO GIAO VIỆC MỚI
     def _send_telegram_notification_giao_viec(self):
-        bot_token = 'token_cua_ban'
-        chat_id = 'ID_cua_ban'
-        
+        bot_token = '8700129057:AAFhFV5ctulPaMEMqANdO6HiKQALvFat3K4'
+        chat_id = '-1003437564419'
         ten_nv = self.nhan_vien_id.ho_va_ten if self.nhan_vien_id else 'Chưa phân công'
         ten_da = self.du_an_id.ten_du_an if self.du_an_id else 'Không thuộc dự án nào'
-        
         message = (
             f"🎯 <b>[CÓ CÔNG VIỆC MỚI ĐƯỢC GIAO]</b>\n\n"
             f"👤 <b>Người nhận:</b> {ten_nv}\n"
@@ -217,14 +210,9 @@ class CongViec(models.Model):
             f"⏳ <b>Deadline:</b> {self.han_hoan_thanh}\n"
             f"🔥 <i>Vào Odoo check yêu cầu và chiến đấu ngay nhé!</i>"
         )
-        
         url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
         payload = {'chat_id': chat_id, 'text': message, 'parse_mode': 'HTML'}
         try:
-            response = requests.post(url, json=payload, timeout=5)
-            # In kết quả ra Terminal để xem bot Telegram báo gì
-            print("=== KẾT QUẢ GỬI TELEGRAM ===")
-            print(response.text)
-        except Exception as e:
-            print("=== LỖI KẾT NỐI MẠNG ===")
-            print(e)
+            requests.post(url, json=payload, timeout=5)
+        except Exception:
+            pass

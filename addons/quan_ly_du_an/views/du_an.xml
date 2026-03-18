@@ -19,6 +19,9 @@
                             <button name="action_mo_danh_sach_cong_viec" type="object" class="oe_stat_button" icon="fa-check-square-o">
                                 <field name="tong_cong_viec_hoan_thanh" widget="statinfo" string="Đã Hoàn Thành"/>
                             </button>
+                            <button class="oe_stat_button" icon="fa-clock-o" style="pointer-events: none;">
+                                <field name="tong_gio_lam_du_an" widget="statinfo" string="Tổng Giờ Làm"/>
+                            </button>
                             <button class="oe_stat_button" icon="fa-users" style="pointer-events: none;">
                                 <field name="so_luong_nhan_vien" widget="statinfo" string="Nhân Sự"/>
                             </button>
@@ -37,7 +40,7 @@
                                 <field name="muc_uu_tien"/>
                                 <field name="ngan_sach"/>
                             </group>
-                            <group string="Thời gian &amp; Nhân sự">
+                            <group string="Thời gian &amp; Tiến độ">
                                 <field name="ngay_bat_dau"/>
                                 <field name="ngay_ket_thuc"/>
                                 <field name="tien_do_du_an" widget="progressbar"/>
@@ -51,10 +54,8 @@
                             <page string="Nhân sự tham gia">
                                 <field name="nhan_vien_ids" widget="many2many_tags"/>
                             </page>
-                            <page string="Lịch sử Tiến độ">
-                                <field name="tien_do_ids"/>
-                            </page>
-                        </notebook>
+                            
+                            </notebook>
                     </sheet>
                 </form>
             </field>
