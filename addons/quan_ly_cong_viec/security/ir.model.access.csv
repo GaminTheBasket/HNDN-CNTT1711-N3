@@ -1,5 +1,10 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_cong_viec,cong_viec.cong_viec,model_cong_viec,base.group_user,1,1,1,1
-access_cong_viec_con,cong_viec_con.cong_viec_con,model_cong_viec_con,base.group_user,1,1,1,1
-access_ghi_nhan_thoi_gian,ghi_nhan_thoi_gian.ghi_nhan_thoi_gian,model_ghi_nhan_thoi_gian,base.group_user,1,1,1,1
-access_danh_gia_cong_viec,danh_gia_cong_viec.danh_gia_cong_viec,model_danh_gia_cong_viec,base.group_user,1,1,1,1
+access_cv_mgr,cv.mgr,model_cong_viec,quan_ly_du_an.group_game_manager,1,1,1,1
+access_cv_user,cv.user,model_cong_viec,quan_ly_du_an.group_game_user,1,1,0,0
+access_cv_con_user,cv_con.usr,model_cong_viec_con,quan_ly_du_an.group_game_user,1,1,1,0
+access_time_user,time.usr,model_ghi_nhan_thoi_gian,quan_ly_du_an.group_game_user,1,1,1,0
+access_dg_mgr,dg.mgr,model_danh_gia_cong_viec,quan_ly_du_an.group_game_manager,1,1,1,1
+access_cv_admin,cv.admin,model_cong_viec,base.group_system,1,1,1,1
+access_cv_con_admin,cv_con.admin,model_cong_viec_con,base.group_system,1,1,1,1
+access_time_admin,time.admin,model_ghi_nhan_thoi_gian,base.group_system,1,1,1,1
+access_dg_admin,dg.admin,model_danh_gia_cong_viec,base.group_system,1,1,1,1

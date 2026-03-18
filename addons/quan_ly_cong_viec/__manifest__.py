@@ -25,11 +25,8 @@
     # always loaded
     'data': [
         'security/ir.model.access.csv',
+        'security/record_rules.xml', # THÊM DÒNG NÀY
         'views/cong_viec.xml',
-        # Đã đóng băng 3 file XML cũ để không bị báo lỗi "không tìm thấy trường dữ liệu"
-        # 'views/cong_viec_con.xml',
-        # 'views/ghi_nhan_thoi_gian.xml',
-        # 'views/danh_gia_cong_viec.xml',
         'views/menu.xml',
     ],
     # only loaded in demonstration mode

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="module_category_game_studio" model="ir.module.category">
+            <field name="name">Quản lý Game Studio</field>
+            <field name="sequence">10</field>
+        </record>
+
+        <record id="group_game_user" model="res.groups">
+            <field name="name">Nhân viên</field>
+            <field name="category_id" ref="module_category_game_studio"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <record id="group_game_hr" model="res.groups">
+            <field name="name">Nhân sự (HR)</field>
+            <field name="category_id" ref="module_category_game_studio"/>
+            <field name="implied_ids" eval="[(4, ref('group_game_user'))]"/>
+        </record>
+
+        <record id="group_game_manager" model="res.groups">
+            <field name="name">Quản lý (Manager)</field>
+            <field name="category_id" ref="module_category_game_studio"/>
+            <field name="implied_ids" eval="[(4, ref('group_game_hr'))]"/>
+        </record>
+    </data>
+</odoo>

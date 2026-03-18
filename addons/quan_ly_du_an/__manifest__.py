@@ -25,16 +25,11 @@
 
     # always loaded
     'data': [
+        'security/security_groups.xml', # FILE NÀY PHẢI NẰM TRÊN CSV
         'security/ir.model.access.csv',
         'views/du_an.xml',
         'views/dashboard.xml',
         'views/menu.xml',
-        # Ẩn các view cũ để tránh xung đột giao diện
-        # 'views/nhiem_vu.xml',
-        # 'views/thoi_gian_lam_viec.xml',
-        # 'views/tien_do.xml',
-        # 'views/tre_han.xml',
-        # 'views/rui_ro.xml',
     ],
     # only loaded in demonstration mode
     'demo': [

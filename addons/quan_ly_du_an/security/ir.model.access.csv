@@ -1,2 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_du_an,du_an.du_an,model_du_an,base.group_user,1,1,1,1
+access_du_an_manager,du_an.mgr,model_du_an,group_game_manager,1,1,1,1
+access_du_an_user,du_an.user,model_du_an,group_game_user,1,0,0,0
+access_du_an_admin,du_an.admin,model_du_an,base.group_system,1,1,1,1
