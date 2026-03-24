@@ -147,7 +147,7 @@ class CongViec(models.Model):
         for record in self:
             if not record.mo_ta:
                 raise ValidationError("Bạn phải nhập 'Mô tả công việc' thì AI mới có cái để đọc và tóm tắt chứ!")
-            api_key = 'KEY_API_CUA_BAN' 
+            api_key = 'AIzaSyDq2BecWjZqYk1zAgh4cIJeEWPaUcOgQ7I' 
             url = f'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}'
             headers = {'Content-Type': 'application/json'}
             prompt = f"Bạn là một trợ lý quản lý dự án xuất sắc. Hãy đọc kỹ đoạn mô tả công việc sau và tóm tắt nó lại thành các gạch đầu dòng ngắn gọn, súc tích, dễ hiểu nhất cho lập trình viên:\n\n{record.mo_ta}"
@@ -179,8 +179,8 @@ class CongViec(models.Model):
         return res
 
     def _send_telegram_notification_hoan_thanh(self):
-        bot_token = 'TOKEN_CUA_BAN'
-        chat_id = 'CHAT_ID_CUA_BAN'
+        bot_token = '8700129057:AAFhFV5ctulPaMEMqANdO6HiKQALvFat3K4'
+        chat_id = '-1003437564419'
         ten_nv = self.nhan_vien_id.ho_va_ten if self.nhan_vien_id else 'Chưa phân công'
         ten_da = self.du_an_id.ten_du_an if self.du_an_id else 'Không thuộc dự án nào'
         message = (
@@ -198,8 +198,8 @@ class CongViec(models.Model):
             pass
 
     def _send_telegram_notification_giao_viec(self):
-        bot_token = 'TOKEN_CUA_BAN'
-        chat_id = 'CHAT_ID_CUA_BAN'
+        bot_token = '8700129057:AAFhFV5ctulPaMEMqANdO6HiKQALvFat3K4'
+        chat_id = '-1003437564419'
         ten_nv = self.nhan_vien_id.ho_va_ten if self.nhan_vien_id else 'Chưa phân công'
         ten_da = self.du_an_id.ten_du_an if self.du_an_id else 'Không thuộc dự án nào'
         message = (
