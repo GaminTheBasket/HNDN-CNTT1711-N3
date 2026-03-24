@@ -1,8 +1,10 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_nhan_vien,nhan_vien.nhan_vien,model_nhan_vien,base.group_user,1,1,1,1
-access_don_vi,don_vi.don_vi,model_don_vi,base.group_user,1,1,1,1
-access_chuc_vu,chuc_vu.chuc_vu,model_chuc_vu,base.group_user,1,1,1,1
-access_lich_su_cong_tac,lich_su_cong_tac.lich_su_cong_tac,model_lich_su_cong_tac,base.group_user,1,1,1,1
-access_chung_chi_bang_cap,chung_chi_bang_cap.chung_chi_bang_cap,model_chung_chi_bang_cap,base.group_user,1,1,1,1
-access_danh_sach_chung_chi_bang_cap,danh_sach_chung_chi_bang_cap.danh_sach_chung_chi_bang_cap,model_danh_sach_chung_chi_bang_cap,base.group_user,1,1,1,1
-access_ky_nang,ky_nang.ky_nang,model_ky_nang,base.group_user,1,1,1,1
+access_nv_admin,nv.admin,model_nhan_vien,base.group_system,1,1,1,1
+access_kn_admin,kn.admin,model_ky_nang,base.group_system,1,1,1,1
+access_ls_admin,ls.admin,model_lich_su_cong_tac,base.group_system,1,1,1,1
+access_dscc_admin,dscc.admin,model_danh_sach_chung_chi_bang_cap,base.group_system,1,1,1,1
+access_nv_mgr,nv.mgr,model_nhan_vien,nhan_su.group_nhan_su_manager,1,1,1,1
+access_kn_mgr,kn.mgr,model_ky_nang,nhan_su.group_nhan_su_manager,1,1,1,1
+access_ls_mgr,ls.mgr,model_lich_su_cong_tac,nhan_su.group_nhan_su_manager,1,1,1,1
+access_dscc_mgr,dscc.mgr,model_danh_sach_chung_chi_bang_cap,nhan_su.group_nhan_su_manager,1,1,1,1
+access_nv_user,nv.user,model_nhan_vien,base.group_user,1,0,0,0
