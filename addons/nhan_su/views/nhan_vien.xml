@@ -6,7 +6,9 @@
             <field name="model">nhan_vien</field>
             <field name="arch" type="xml">
                 <form>
-                    <header><field name="trang_thai_lam_viec" widget="statusbar" options="{'clickable': '1'}"/></header>
+                    <header>
+                        <field name="trang_thai_lam_viec" widget="statusbar" options="{'clickable': '1'}"/>
+                    </header>
                     <sheet>
                         <field name="anh" widget="image" class="oe_avatar"/>
                         <div class="oe_title">
@@ -14,14 +16,13 @@
                             <h3><field name="ma_dinh_danh" readonly="1" force_save="1"/></h3>
                         </div>
                         <group>
-                            <group string="Thông tin cá nhân">
+                            <group string="Cá nhân">
                                 <field name="ho_ten_dem"/><field name="ten"/>
-                                <field name="ngay_sinh"/><field name="tuoi" readonly="1" force_save="1"/>
+                                <field name="ngay_sinh"/><field name="tuoi" readonly="1"/>
                                 <field name="user_id" groups="base.group_system"/>
                             </group>
-                            <group string="Thông tin công tác">
-                                <field name="vai_tro" groups="base.group_system"/>
-                                <field name="vai_tro" groups="!base.group_system" readonly="1" force_save="1"/>
+                            <group string="Công việc">
+                                <field name="vai_tro" groups="nhan_su.group_nhan_su_hr,nhan_su.group_nhan_su_manager,base.group_system"/>
                                 <field name="phong_ban"/>
                             </group>
                         </group>
@@ -38,7 +39,6 @@
                     <field name="ma_dinh_danh"/>
                     <field name="ho_va_ten"/>
                     <field name="vai_tro"/>
-                    <field name="phong_ban"/>
                     <field name="trang_thai_lam_viec" widget="badge"/>
                 </tree>
             </field>

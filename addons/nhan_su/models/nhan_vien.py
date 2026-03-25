@@ -23,6 +23,7 @@ class NhanVien(models.Model):
     tuoi = fields.Integer("Tuổi", compute="_compute_tuoi", store=True)
     email = fields.Char("Email")
     so_dien_thoai = fields.Char("Số điện thoại")
+    que_quan = fields.Char("Quê quán")
     
     trang_thai_lam_viec = fields.Selection([
         ('thu_viec', 'Thử việc'), ('chinh_thuc', 'Chính thức'), ('da_nghi', 'Đã nghỉ')
@@ -42,26 +43,25 @@ class NhanVien(models.Model):
     lich_su_cong_tac_ids = fields.One2many("lich_su_cong_tac", "nhan_vien_id")
     danh_sach_chung_chi_bang_cap_ids = fields.One2many("danh_sach_chung_chi_bang_cap", "nhan_vien_id")
 
-    # Logic cấp quyền tự động cho Manager
     def write(self, vals):
         res = super(NhanVien, self).write(vals)
         if 'vai_tro' in vals:
             for record in self:
                 if record.user_id:
-                    try:
-                        group_mgr = self.env.ref('nhan_su.group_nhan_su_manager')
-                        if vals['vai_tro'] == 'manager':
-                            record.user_id.sudo().write({'groups_id': [(4, group_mgr.id)]})
-                        else:
-                            record.user_id.sudo().write({'groups_id': [(3, group_mgr.id)]})
-                    except: continue
+                    group_hr = self.env.ref('nhan_su.group_nhan_su_hr')
+                    group_mgr = self.env.ref('nhan_su.group_nhan_su_manager')
+                    record.user_id.sudo().write({'groups_id': [(3, group_hr.id), (3, group_mgr.id)]})
+                    if vals['vai_tro'] == 'manager':
+                        record.user_id.sudo().write({'groups_id': [(4, group_mgr.id)]})
+                    elif vals['vai_tro'] == 'hr':
+                        record.user_id.sudo().write({'groups_id': [(4, group_hr.id)]})
         return res
 
     @api.constrains('vai_tro')
     def _check_admin_roles(self):
         for record in self:
             if record.vai_tro in ['hr', 'manager'] and not self.env.user.has_group('base.group_system'):
-                raise ValidationError("Lỗi: Chỉ Admin tối cao mới được gán vai trò HR/Manager!")
+                raise ValidationError("Chỉ Admin hệ thống mới được cấp quyền HR/Manager!")
 
     @api.depends("ho_ten_dem", "ten")
     def _compute_ho_va_ten(self):

@@ -1,16 +1,21 @@
 <odoo>
     <data noupdate="0">
-        <record id="rule_visibility_staff_only" model="ir.rule">
-            <field name="name">Ẩn Sếp khỏi danh sách thường</field>
+        <record id="rule_staff_see_only_self" model="ir.rule">
+            <field name="name">Staff: Only see own profile</field>
             <field name="model_id" ref="model_nhan_vien"/>
-            <field name="domain_force">
-                ['|', ('vai_tro', 'in', ['3d_artist', '2d_artist', 'dev', 'designer', 'qa']), ('user_id', '=', user.id)]
-            </field>
-            <field name="groups" eval="[(4, ref('base.group_user')), (4, ref('nhan_su.group_nhan_su_manager'))]"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('base.group_user'))]"/>
         </record>
 
-        <record id="rule_admin_unlimited" model="ir.rule">
-            <field name="name">Admin: Thấy hết</field>
+        <record id="rule_hr_mgr_visibility" model="ir.rule">
+            <field name="name">HR/Mgr: See Staff and Self</field>
+            <field name="model_id" ref="model_nhan_vien"/>
+            <field name="domain_force">['|', ('vai_tro', 'not in', ['hr', 'manager']), ('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('nhan_su.group_nhan_su_hr')), (4, ref('nhan_su.group_nhan_su_manager'))]"/>
+        </record>
+
+        <record id="rule_admin_all_access" model="ir.rule">
+            <field name="name">Admin: See All</field>
             <field name="model_id" ref="model_nhan_vien"/>
             <field name="domain_force">[(1, '=', 1)]</field>
             <field name="groups" eval="[(4, ref('base.group_system'))]"/>

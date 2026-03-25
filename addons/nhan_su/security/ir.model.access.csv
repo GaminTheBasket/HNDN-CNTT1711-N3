@@ -7,4 +7,8 @@ access_nv_mgr,nv.mgr,model_nhan_vien,nhan_su.group_nhan_su_manager,1,1,1,1
 access_kn_mgr,kn.mgr,model_ky_nang,nhan_su.group_nhan_su_manager,1,1,1,1
 access_ls_mgr,ls.mgr,model_lich_su_cong_tac,nhan_su.group_nhan_su_manager,1,1,1,1
 access_dscc_mgr,dscc.mgr,model_danh_sach_chung_chi_bang_cap,nhan_su.group_nhan_su_manager,1,1,1,1
-access_nv_user,nv.user,model_nhan_vien,base.group_user,1,0,0,0
+access_nv_hr,nv.hr,model_nhan_vien,nhan_su.group_nhan_su_hr,1,1,1,0
+access_kn_hr,kn.hr,model_ky_nang,nhan_su.group_nhan_su_hr,1,1,1,0
+access_ls_hr,ls.hr,model_lich_su_cong_tac,nhan_su.group_nhan_su_hr,1,1,1,0
+access_dscc_hr,dscc.hr,model_danh_sach_chung_chi_bang_cap,nhan_su.group_nhan_su_hr,1,1,1,0
+access_nv_staff,nv.staff,model_nhan_vien,base.group_user,1,0,0,0
